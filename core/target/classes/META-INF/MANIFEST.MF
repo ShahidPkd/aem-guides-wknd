@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-Category: WKND Sites Project
+Bundle-Description: Core bundle for WKND Sites Project
+Bundle-ManifestVersion: 2
+Bundle-Name: WKND Sites Project - Core
+Bundle-SymbolicName: aem-guides-wknd.core
+Bundle-Version: 0.0.1.SNAPSHOT
+Import-Package: javax.annotation;version="0.0.0"
+
