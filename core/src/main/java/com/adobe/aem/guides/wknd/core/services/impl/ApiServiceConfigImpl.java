@@ -35,7 +35,7 @@ public class ApiServiceConfigImpl implements ApiServiceConfig {
     @Activate
     protected void activate(ServiceConfig serviceConfig) {
         serviceName = serviceConfig.serviceName();
-        log.info(" ok " + serviceName);
+        log.info(serviceName);
         apiName = serviceConfig.apiName();
         log.info(apiName);
     }
