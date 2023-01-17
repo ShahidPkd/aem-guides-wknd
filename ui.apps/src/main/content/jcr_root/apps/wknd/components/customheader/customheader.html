@@ -1,0 +1,33 @@
+<div data-sly-use.model="com.adobe.aem.guides.wknd.core.models.CustomHeader"
+  data-sly-use.templates="core/wcm/components/commons/v1/templates.html" data-cmp-is="customHeader" class="cmp-mainheader">
+  <sly data-sly-test="${!model.isEmpty}">
+    
+    <div class="cmp-mainheader__logo">
+
+    <a href="http://localhost:4502/${model.homeLink}.html?query=disabled"><img src="${model.logo}" alt="rightpoint" /></a>
+
+    </div>
+    <div class="cmp-mainheader__navbar" data-sly-list.item="${model.category}">
+      <a href="http://localhost:4502/${item.link}.html?query=disabled" class="cmp-mainheader__navbar-link ${item.id}">${item.text}</a>
+
+    </div>
+    <div class="cmp-mainheader__right">
+      <div class="cmp-mainheader__right-webrtc"> <a href="${model.weblink}"> <i class="fa-solid fa-globe my-font"></i>
+        </a>
+      </div>
+
+      <div class="cmp-mainheader__right-myspan1"> <span> | </span></div>
+
+      <div class="cmp-mainheader__right-websearch"> <i
+            class="fa-solid fa-magnifying-glass my-font" id="custom-search"> </i>
+      </div>
+      <div class="cmp-mainheader__right-myspan2"> <span> | </span></div>
+
+      <div class="cmp-mainheader__right-webmenu"><a href="#"><i class="fa-solid fa-bars my-font"></i></a>
+
+      </div>
+
+    </div>
+  </sly>
+</div>
+<sly data-sly-call="${templates.placeholder @ isEmpty = model.isEmpty}"></sly>

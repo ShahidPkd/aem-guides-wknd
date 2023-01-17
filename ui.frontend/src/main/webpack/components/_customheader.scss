@@ -1,0 +1,201 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css');
+
+.cmp-mainheader {
+    background-color: $color-rp-white;
+    display: flex;
+    height: 75px;
+    width: 100%;
+
+    &__logo {
+        background-color: $color-rp-white;
+        height: 70px;
+        width: 65%;
+
+        a img {
+            height: 40px;
+            padding: 9px;
+            margin: auto;
+            margin-top: 10px;
+            width: 50%;
+        }
+
+        // for mediam size above of pixels
+        @include min-screen(md) {
+            height: 70px;
+            width: 20%;
+            margin-left:20px;
+
+            a img {
+                height: 30px;
+                width: 70%;
+                
+            }
+        }
+        @include min-screen(xl) {
+            height: 70px;
+            width: 15%;
+            margin-left:50px;
+
+            a img {
+                height: 35px;
+                width: 80%;
+                
+            }
+        }
+        
+        @include min-screen(xxl) {
+            height: 70px;
+            width: 10%;
+            margin-left:70px;
+
+            a img {
+                height: 35px;
+                width: 80%;
+                
+            }
+        }
+    }
+
+    &__navbar {
+        display: none;
+
+        // for mediam size above of pixels
+        @include min-screen(md) {
+
+            align-items: center;
+            background-color: $color-rp-white;
+            // display: block;
+            display: flex;
+            width: 61%;
+
+            &-link {
+                color: $color-rp-grey;
+                margin-left: 15px;
+                margin-right: 15px;
+                text-decoration: none;
+
+                &:hover {
+                    color: $color-rp-black;
+                    transition: color .3s ease 0s;
+                    transition-property: color;
+                    transition-duration: .4s;
+                    transition-timing-function: ease;
+                    transition-delay: 0s;
+                }
+
+                &.rightnav {
+                    display: none;
+
+                    // for lg size pixels design
+                    @include min-screen(lg) {
+                        background-color: $color-rp-black;
+                        color: $color-rp-white;
+                        display: block;
+                        font-size: 15px;
+                        padding: 10px;
+                        margin-left: 18%;
+
+                        &:hover {
+                            background-color: $color-rp-grey;
+                            color: $color-rp-white;
+                        }
+                    }
+
+                    // for xl size above pixels
+                    @include min-screen(xl) {
+                        margin-left: 30%;
+                    }
+
+                    //for xxl size above pixels
+                    @include min-screen(xxl) {
+                        margin-left: 38%;
+                    }
+                }
+            }
+
+        }
+    }
+
+    &__right {
+        align-items: center;
+        justify-items: center;
+        display: flex;
+        height: 75px;
+        width: 35%;
+
+        &-myspan1 {
+            display: none;
+        }
+        &-myspan2 {
+            color: $color-rp-black;
+            font-size: 25px;
+        }
+        &-webrtc {
+            display: none;
+        }
+        &-websearch {
+            margin: auto;
+            text-align: center;
+            width: 50%;
+
+            .my-font {
+                font-size: 20px;
+                justify-content: center;
+                color: $color-rp-black;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.2, 1.2);
+                }
+            }
+        }
+
+        &-webmenu {
+            margin: auto;
+            text-align: center;
+            width: 50%;
+
+            .my-font {
+                font-size: 20px;
+                justify-content: center;
+                color: $color-rp-black;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.2, 1.2);
+                }
+            }
+        }
+
+        @include min-screen(md) {
+            width: 24%;
+            &-myspan1 {
+                color: $color-rp-black;
+                display: block;
+                font-size: 25px;
+            }
+            &-webrtc {
+                margin: auto;
+                text-align: center;
+                display: block;
+                width: 31%;
+                .my-font {
+                    color: $color-rp-black;
+                    font-size: 20px;
+                    justify-content: center;
+
+                    &:hover {
+                        cursor: pointer;
+                        transform: scale(1.2, 1.2);
+                    }
+                }
+            }
+            &-websearch {
+                width: 31%;
+            }
+            &-webmenu {
+                width: 31%;
+            }
+        }
+    }
+}
