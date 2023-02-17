@@ -2,11 +2,11 @@ package com.adobe.aem.guides.wknd.core.servlets;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 
 import org.apache.sling.servlets.annotations.SlingServletPaths;
-
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.osgi.service.component.annotations.Component;
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(service = Servlet.class)
 @SlingServletPaths(value = { "/bin/search" })
+
 public class SearchPageServlet extends SlingAllMethodsServlet {
     // private static final Logger LOG =
     // LoggerFactory.getLogger(MyPathTypeServlet.class);

@@ -1,22 +1,17 @@
 package com.adobe.aem.guides.wknd.core.models.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.adobe.aem.guides.wknd.core.models.CustomHeader;
 import com.adobe.aem.guides.wknd.core.models.CustomSearch;
 import com.adobe.aem.guides.wknd.core.models.DTO.CustomHeaderDTO;
 
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.Resource;
+
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.apache.sling.models.annotations.injectorspecific.SlingObject;
+
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
 @Model(adaptables = { SlingHttpServletRequest.class }, adapters = { CustomSearch.class }, resourceType = {

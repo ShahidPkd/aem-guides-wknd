@@ -7,6 +7,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 // for resource resolver
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -16,7 +17,6 @@ import org.osgi.service.component.annotations.Reference;
 
 import com.adobe.aem.guides.wknd.core.services.SearchPageService;
 import com.adobe.aem.guides.wknd.core.models.DTO.SearchPageDTO;
-// import com.adobe.aem.guides.wknd.core.utils.ResolverUtil;
 
 // for query builder all classes
 import com.day.cq.search.QueryBuilder;
@@ -77,13 +77,26 @@ public class SearchPageServiceImpl implements SearchPageService {
         ResourceResolver resourceResolver = request.getResourceResolver();
         session = resourceResolver.adaptTo(Session.class);
 
+        String SPATH = "/content/experience-fragments/wknd/us/en/site/header/master/jcr:content/root/customsearch";
+        ResourceResolver resourceResolver2 = request.getResourceResolver();
+
+        Resource resource2 = resourceResolver2.getResource(SPATH);
+        ValueMap property = resource2.adaptTo(ValueMap.class);
+        String searchPath = property.get("pathLink", String.class);
+
+        String pageNumber = request.getParameter("page");
+        int pageNo = Integer.parseInt(pageNumber);
+        int resultPerPage = 10;
+        int offsetValue = (pageNo == 1 ? 0 : (resultPerPage * (pageNo - 1)) + 1);
+
         Map<String, String> predicates = new HashMap<>();
-        predicates.put("path", "/content/wknd/us/en/blogs");
+        predicates.put("path", searchPath);
         predicates.put("type", "cq:Page");
         predicates.put("1_property", "jcr:content/jcr:title");
         predicates.put("1_property.value", request.getParameter("query") + "%");
         predicates.put("1_property.operation", "like");
-        predicates.put("p.limit", "-1");
+        predicates.put("p.offset", String.valueOf(offsetValue));
+        predicates.put("p.limit", String.valueOf(pageNo * 10));
 
         Query query = null;
         try {
