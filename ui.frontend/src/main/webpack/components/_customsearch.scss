@@ -1,0 +1,40 @@
+.cmp-customsearch{
+    height: 75px;
+    background-color: white;
+    &-container{
+        display: flex;
+        width: 100%;
+        padding: 15px 20px;
+        justify-content: space-between;
+        opacity: 0;
+        transition: linear 10.5s opacity;
+        
+
+        &__wrapper{
+            position: relative;
+            width: 80%;
+            ul{
+                position: absolute;
+                top: 100%;
+            }
+        }
+
+        &__input{
+            padding: 10px 0px;
+            width: 100%;
+            position: relative;
+        }
+
+
+
+
+        &__search{
+            width: 20%;
+            i{
+                padding: 15px 40px;
+            }
+        }
+    }
+  
+
+}
