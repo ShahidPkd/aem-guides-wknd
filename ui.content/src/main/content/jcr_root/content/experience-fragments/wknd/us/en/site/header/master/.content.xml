@@ -2,6 +2,8 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
+        cq:lastModified="{Date}2023-03-10T16:24:21.888+05:30"
+        cq:lastModifiedBy="admin"
         cq:tags="[]"
         cq:template="/conf/wknd/settings/wcm/templates/xf-web-variation"
         cq:xfMasterVariation="{Boolean}true"
@@ -10,25 +12,59 @@
         jcr:title="Header"
         sling:resourceType="wknd/components/xfpage">
         <root
+            jcr:lastModified="{Date}2023-02-08T16:25:25.799+05:30"
+            jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="wknd/components/container"
-            layout="simple">
-            <navigation
+            sling:resourceType="wknd/components/container">
+            <logo/>
+            <customheader
+                jcr:created="{Date}2023-02-08T16:16:36.662+05:30"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2023-02-08T16:17:59.250+05:30"
+                jcr:lastModifiedBy="admin"
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="wknd/components/navigation"
-                collectAllPages="false"
-                navigationRoot="/content/wknd/us/en"
-                skipNavigationRoot="false"
-                structureDepth="1"/>
-            <languagenavigation
+                sling:resourceType="wknd/components/customheader"
+                homeLink="#"
+                logo="/content/dam/wknd/asset.jpg"
+                search="#"
+                weblink="https://itsshahid.com">
+                <category jcr:primaryType="nt:unstructured">
+                    <item0
+                        jcr:primaryType="nt:unstructured"
+                        link="#"
+                        text="Thought"/>
+                    <item1
+                        jcr:primaryType="nt:unstructured"
+                        link="#"
+                        text="Company"/>
+                    <item2
+                        jcr:primaryType="nt:unstructured"
+                        link="#"
+                        text="Solutions"/>
+                    <item3
+                        jcr:primaryType="nt:unstructured"
+                        link="#"
+                        text="Careers"/>
+                    <item4
+                        jcr:primaryType="nt:unstructured"
+                        link="#"
+                        text="Contact Us"/>
+                </category>
+                <cq:responsive jcr:primaryType="nt:unstructured">
+                    <default
+                        jcr:primaryType="nt:unstructured"
+                        offset="0"
+                        width="9"/>
+                </cq:responsive>
+            </customheader>
+            <customsearch
+                jcr:created="{Date}2023-02-10T13:02:42.947+05:30"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2023-03-10T16:24:21.789+05:30"
+                jcr:lastModifiedBy="admin"
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="wknd/components/languagenavigation"
-                navigationRoot="/content/wknd/us"
-                structureDepth="2"/>
-            <search
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="wknd/components/search"
-                searchRoot="/content/wknd/us"/>
+                sling:resourceType="wknd/components/customsearch"
+                pathLink="/content/wknd/us/en/blogs"/>
         </root>
     </jcr:content>
 </jcr:root>
