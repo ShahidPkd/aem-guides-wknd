@@ -79,6 +79,8 @@
             </container>
         </root>
     </jcr:content>
-    <home-page/>
     <blogs/>
+    <search/>
+    <home/>
+    <home-page/>
 </jcr:root>

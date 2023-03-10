@@ -4,7 +4,7 @@
     <jcr:content
         cq:lastModified="{Date}2022-11-17T16:04:02.223+05:30"
         cq:lastModifiedBy="admin"
-        cq:template="/conf/wknd/settings/wcm/templates/page-content"
+        cq:template="/conf/wknd/settings/wcm/templates/home-page"
         jcr:description="For contacting me you can visit on my email"
         jcr:primaryType="cq:PageContent"
         jcr:title="Contact Us"

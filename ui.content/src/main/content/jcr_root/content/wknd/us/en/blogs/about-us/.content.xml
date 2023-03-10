@@ -4,7 +4,7 @@
     <jcr:content
         cq:lastModified="{Date}2022-11-17T16:03:23.961+05:30"
         cq:lastModifiedBy="admin"
-        cq:template="/conf/wknd/settings/wcm/templates/page-content"
+        cq:template="/conf/wknd/settings/wcm/templates/home-page"
         jcr:description="Here All about me is stored"
         jcr:primaryType="cq:PageContent"
         jcr:title="About Us"

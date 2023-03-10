@@ -2,16 +2,12 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
-        cq:lastModified="{Date}2022-11-17T16:05:11.024+05:30"
+        cq:lastModified="{Date}2023-01-13T18:18:10.575+05:30"
         cq:lastModifiedBy="admin"
         cq:template="/conf/wknd/settings/wcm/templates/home-page"
-        jcr:description="Privacy and Policy : We keep secure your privacy and keep you up to date. Privacy and Policy is main concern of this page"
         jcr:primaryType="cq:PageContent"
-        jcr:title="Privacy and Policy"
-        sling:resourceType="wknd/components/page"
-        pwaCachestrategy="staleWhileRevalidate"
-        pwaDisplay="standalone"
-        pwaOrientation="any">
+        jcr:title="Components in AEM | Different Types of Component In AEM"
+        sling:resourceType="wknd/components/page">
         <root
             jcr:primaryType="nt:unstructured"
             sling:resourceType="wknd/components/container"
