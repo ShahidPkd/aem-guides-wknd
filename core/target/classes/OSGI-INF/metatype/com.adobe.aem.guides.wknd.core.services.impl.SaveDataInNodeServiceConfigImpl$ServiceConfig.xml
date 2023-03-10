@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="OSGI-INF/l10n/com.adobe.aem.guides.wknd.core.services.impl.SaveDataInNodeServiceConfigImpl$ServiceConfig">
+  <OCD id="com.adobe.aem.guides.wknd.core.services.impl.SaveDataInNodeServiceConfigImpl$ServiceConfig" name="Save Data In Node Sample Config  - OSGi Configuration" description="OSGi Descriptionfor the sample Shahid Configuration demo.">
+    <AD id="serviceName" type="String" name="Resource Path" description="Enter Resource Path." default="/apps/wknd/components/myblogs"/>
+    <AD id="apiName" type="String" name="Node Name" description="Enter Node name." default="mydetails"/>
+  </OCD>
+  <Designate pid="com.adobe.aem.guides.wknd.core.services.impl.SaveDataInNodeServiceConfigImpl">
+    <Object ocdref="com.adobe.aem.guides.wknd.core.services.impl.SaveDataInNodeServiceConfigImpl$ServiceConfig"/>
+  </Designate>
+</metatype:MetaData>

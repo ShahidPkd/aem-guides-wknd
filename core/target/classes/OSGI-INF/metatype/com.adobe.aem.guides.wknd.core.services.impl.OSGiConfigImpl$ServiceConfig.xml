@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="OSGI-INF/l10n/com.adobe.aem.guides.wknd.core.services.impl.OSGiConfigImpl$ServiceConfig">
+  <OCD id="com.adobe.aem.guides.wknd.core.services.impl.OSGiConfigImpl$ServiceConfig" name="Munesh AEM Sample Config  - OSGi Configuration" description="OSGi Munesh Configuration demo.">
+    <AD id="serviceName" type="String" name="Service Name" description="Enter service name." default="AEM\ Geeks\ Service"/>
+    <AD id="getServiceCount" type="Integer" name="Service Count" description="Add Service Count." default="5"/>
+    <AD id="getLiveData" type="Boolean" name="Live Data" description="Check this to get live data." default="false"/>
+    <AD id="getCountries" type="String" cardinality="2147483647" name="Countries" description="Add countries locales for which you want to run this service." default="de,in"/>
+    <AD id="getRunMode" type="String" name="Run Modes" description="Select Run Mode." default="both">
+      <Option label="Author" value="author"/>
+      <Option label="Publish" value="publish"/>
+      <Option label="Both" value="both"/>
+    </AD>
+    <AD id="getApiName" type="String" name="URL" description="Add URL." default="https"/>
+  </OCD>
+  <Designate pid="com.adobe.aem.guides.wknd.core.services.impl.OSGiConfigImpl">
+    <Object ocdref="com.adobe.aem.guides.wknd.core.services.impl.OSGiConfigImpl$ServiceConfig"/>
+  </Designate>
+</metatype:MetaData>
