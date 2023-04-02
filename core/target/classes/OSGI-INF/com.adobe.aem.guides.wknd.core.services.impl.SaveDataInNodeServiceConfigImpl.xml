@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="com.adobe.aem.guides.wknd.core.services.impl.SaveDataInNodeServiceConfigImpl" immediate="true" activate="activate">
-  <property name="serviceName" type="String" value="/apps/wknd/components/myblogs"/>
-  <property name="apiName" type="String" value="mydetails"/>
-  <service>
-    <provide interface="com.adobe.aem.guides.wknd.core.services.SaveDataInNodeServiceConfig"/>
-  </service>
-  <implementation class="com.adobe.aem.guides.wknd.core.services.impl.SaveDataInNodeServiceConfigImpl"/>
-</scr:component>

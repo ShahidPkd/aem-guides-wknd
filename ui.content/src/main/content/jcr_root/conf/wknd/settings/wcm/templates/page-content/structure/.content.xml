@@ -13,7 +13,8 @@
             <experiencefragment-header
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="wknd/components/experiencefragment"
-                fragmentVariationPath="/content/experience-fragments/wknd/us/en/site/header/master"/>
+                fragmentVariationPath="/content/experience-fragments/wknd/us/en/site/header/master"
+                text="Thought Company Solutions Careers Contact Us | |"/>
             <container
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="wknd/components/container"

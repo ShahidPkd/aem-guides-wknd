@@ -1,0 +1,249 @@
+.cmp-herocomponent{
+    color: $color-light;
+    position: relative;
+    @include max-screen(md){
+        background-color: $color-light;
+    }
+    &__img{
+        width: 100%;
+        img{
+            object-fit: cover;
+            width: 100%;
+            max-height: 350px;
+        }
+    }
+    &__contents{
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+
+        @include max-screen(md){
+            background-color: $color-light;
+            color: $color-rp-black;
+            height: auto;
+            padding-bottom: 18px;
+            top: 100%;
+        }
+        
+    }
+
+    &__wrapper{
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        padding: 0px 20%;
+
+        @include max-screen(md){
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    &__logo{
+        display: flex;
+        justify-content: center;
+        img{
+            max-width: 200px;
+        }
+        @include max-screen(md){
+            display: none;
+        }
+    }
+
+    &__title{
+        font-size: 32px;
+        font-weight: 300;
+        margin: 8px;
+        margin: 0px auto;
+    }
+    &__description{
+        margin: 18px auto;
+        text-align: center;
+
+        @include max-screen(md){
+            margin: 0px auto;
+        }
+    }
+
+    &__btn{
+        font-size: 14px;
+        text-decoration: none;
+
+        span{
+            border: 2px solid $color-rp-black;
+            border-radius: 25px;
+            background-color: $color-dark;
+            color: $color-light;
+            display: flex;
+            justify-content: center;
+            padding: 2px 12px;
+            &::after{
+                background-image: url("/etc.clientlibs/wknd/clientlibs/clientlib-site/resources/images/white-arrow.png");
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: contain;
+                content: "";
+                display: block;
+                margin-left: 10px;
+                rotate: 225deg;
+                width: 12px;
+            }
+            &:hover{
+                background-color: $color-light;
+                color: $color-dark;
+                &::after{
+                    background-image: url("/etc.clientlibs/wknd/clientlibs/clientlib-site/resources/images/black-arrow.png");
+                }
+            }
+        }
+
+        &-wrapper{
+            display: flex;
+            justify-content: center;
+        }
+    }
+    
+}
+
+.cmp-fifty-light{
+    .cmp-herocomponent{
+        background-color: $color-light;
+        color: $color-dark;
+        display: flex;
+        @include max-screen(md){
+            position: relative;
+            flex-direction: column;
+        }
+    
+        &__img{
+            width: 50%;
+            max-height: 350px;
+            @include max-screen(md){
+                width: 100%;
+                
+            }
+        }
+        &__contents{
+            position: static;
+            margin: auto 0px;
+            width: 50%;
+            @include max-screen(md){
+                width: 100%;
+                position: absolute;
+                top: 100%;
+            }
+        }
+
+        &__logo{
+            max-width: 200px;
+            @include max-screen(md){
+                max-width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+        }
+        &__title{
+            display: none;
+            @include max-screen(md){
+                display: block;
+            }
+
+        }
+        &__description{
+            text-align: left;
+            @include max-screen(md){
+                text-align: center;
+            }
+        }
+        &__btn{
+            &-wrapper{
+                display: flex;
+                justify-content: start;
+
+                @include max-screen(md){
+                    justify-content: center;
+                }
+            }
+        }
+    }
+    
+}
+.cmp-fifty-dark{
+
+    .cmp-herocomponent{
+        background-color: $color-dark;
+        color: $color-light;
+        display: flex;
+
+
+    
+        &__img{
+            width: 50%;
+            max-height: 350px;
+            @include max-screen(md){
+                width: 100%;
+                
+            }
+        }
+        &__contents{
+            
+            position: static;
+            margin: auto 0px;
+            width: 50%;
+            @include max-screen(md){
+                background-color: $color-dark;
+                width: 100%;
+                position: absolute;
+                top: 100%;
+            }
+        }
+
+        &__logo{
+            max-width: 200px;
+            @include max-screen(md){
+                max-width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+        }
+        &__title{
+            display: none;
+            @include max-screen(md){
+                display: block;
+            }
+
+        }
+        &__description{
+            text-align: left;
+            @include max-screen(md){
+                text-align: center;
+            }
+        }
+        &__btn{
+            color: $color-dark;
+            &-wrapper{
+                display: flex;
+                justify-content: start;
+
+                @include max-screen(md){
+                    justify-content: center;
+                }
+            }
+
+            &::after{
+                background-image: url("/etc.clientlibs/wknd/clientlibs/clientlib-site/resources/images/black-arrow.png");
+            }
+
+            &:hover{
+                background-color: $color-dark;
+                color: $color-light;
+                &::after{
+                    background-image: url("/etc.clientlibs/wknd/clientlibs/clientlib-site/resources/images/white-arrow.png");
+                }
+            }
+        }
+    }
+    
+}

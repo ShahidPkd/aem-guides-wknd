@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="com.adobe.aem.guides.wknd.core.servlets.SaveDataInNodeServlet">
-  <property name="sling.servlet.paths" type="String">/bin/savedatainnode</property>
-  <service>
-    <provide interface="javax.servlet.Servlet"/>
-  </service>
-  <reference name="saveDataInNodeService" interface="com.adobe.aem.guides.wknd.core.services.SaveDataInNodeService" field="saveDataInNodeService"/>
-  <implementation class="com.adobe.aem.guides.wknd.core.servlets.SaveDataInNodeServlet"/>
-</scr:component>

@@ -1,4 +1,43 @@
-.cmp-button {}
+.button{
+    &-align{
+        &-center{
+            display: flex;
+            justify-content: center;
+            .cmp-button{
+                width: auto;
+            }
+        }
+        &-left{
+            display: flex;
+            justify-content: start;
+            .cmp-button{
+                width: auto;
+            }
+        }
+        &-right{
+            display: flex;
+            justify-content: end;
+            .cmp-button{
+                width: auto;
+            }
+        }
+    }
+}
+.cmp-button {
+    border: 1.5px solid $color-rp-black;
+    background-color: $color-grey;
+    color: $color-rp-white;
+    display: block;
+    font-size: 24px;
+    padding: 10px;
+    text-decoration: none;
+    width: 100%;
+    &:hover{
+        background-color: $color-rp-white;
+        color: $color-rp-black;
+    }
+}
+
+
 .cmp-button__text {}
 .cmp-button__icon {}
-//.cmp-button__icon--myIcon {}

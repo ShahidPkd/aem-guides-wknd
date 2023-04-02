@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="OSGI-INF/l10n/com.adobe.aem.guides.wknd.core.services.impl.ConfigTestImpl$ServiceConfig">
-  <OCD id="com.adobe.aem.guides.wknd.core.services.impl.ConfigTestImpl$ServiceConfig" name="Registering  - OSGi Configuration" description="OSGi Descriptionfor the sample Shahid Configuration demo.">
-    <AD id="myName" type="String" name="Your Name" description="Enter name." default="Shahid"/>
-  </OCD>
-  <Designate pid="com.adobe.aem.guides.wknd.core.services.impl.ConfigTestImpl">
-    <Object ocdref="com.adobe.aem.guides.wknd.core.services.impl.ConfigTestImpl$ServiceConfig"/>
-  </Designate>
-</metatype:MetaData>
