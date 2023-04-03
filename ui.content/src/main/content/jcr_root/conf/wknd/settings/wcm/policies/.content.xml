@@ -331,7 +331,7 @@
             <page jcr:primaryType="nt:unstructured">
                 <policy
                     jcr:description="Includes the required client libraries."
-                    jcr:lastModified="{Date}2023-03-27T14:36:44.338+05:30"
+                    jcr:lastModified="{Date}2023-03-27T16:18:21.569+05:30"
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     jcr:title="Generic Page"
@@ -341,7 +341,7 @@
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                     <cq:styleGroups jcr:primaryType="nt:unstructured">
                         <item0
-                            cq:styleGroupLabel="Styles"
+                            cq:styleGroupLabel="Margin"
                             cq:styleGroupMultiple="true"
                             jcr:primaryType="nt:unstructured">
                             <cq:styles jcr:primaryType="nt:unstructured">
@@ -360,6 +360,60 @@
                     </cq:styleGroups>
                 </policy>
             </page>
+            <button jcr:primaryType="nt:unstructured">
+                <policy_1679910854821
+                    jcr:lastModified="{Date}2023-03-27T16:09:45.632+05:30"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Button Policy"
+                    sling:resourceType="wcm/core/components/policy/policy">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                    <cq:styleGroups jcr:primaryType="nt:unstructured">
+                        <item0 jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="button-align-center"
+                                    cq:styleId="1679910869940"
+                                    cq:styleLabel="Align Center"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item1
+                                    cq:styleClasses="button-align-left"
+                                    cq:styleId="1679911535646"
+                                    cq:styleLabel="Align Left"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item2
+                                    cq:styleClasses="button-align-right"
+                                    cq:styleId="1679912117592"
+                                    cq:styleLabel="Align Right"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item0>
+                    </cq:styleGroups>
+                </policy_1679910854821>
+            </button>
+            <customteaser jcr:primaryType="nt:unstructured">
+                <policy_1680508370767
+                    jcr:lastModified="{Date}2023-04-03T13:24:08.717+05:30"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Custom Teaser Styles"
+                    sling:resourceType="wcm/core/components/policy/policy">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                    <cq:styleGroups jcr:primaryType="nt:unstructured">
+                        <item0
+                            cq:styleGroupLabel="Teaser Styles"
+                            jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="cmp-media-teaser"
+                                    cq:styleId="1680508392967"
+                                    cq:styleLabel="Media Teaser"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item0>
+                    </cq:styleGroups>
+                </policy_1680508370767>
+            </customteaser>
         </components>
     </wknd>
 </jcr:root>
