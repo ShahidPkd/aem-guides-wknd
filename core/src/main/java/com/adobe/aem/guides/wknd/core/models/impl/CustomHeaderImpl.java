@@ -73,7 +73,6 @@ public class CustomHeaderImpl extends CustomComponentImpl implements CustomHeade
     }
 
     @Override
-
     public String getHomeLink() {
         return homeLink;
     }
