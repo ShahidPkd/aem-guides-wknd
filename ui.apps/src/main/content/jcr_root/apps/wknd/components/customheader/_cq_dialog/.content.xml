@@ -32,11 +32,11 @@
                         title="Upload Image Asset"
                         uploadUrl="${suffix.path}"
                         useHTML5="{Boolean}true"/>
-                        <homelink
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
-                                emptyText="Link"
-                                name="./homeLink"/>
+                    <homelink
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                        emptyText="Link"
+                        name="./homeLink"/>
                     <category
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
