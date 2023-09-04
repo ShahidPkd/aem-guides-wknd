@@ -28,6 +28,7 @@
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/container">
                                 <items jcr:primaryType="nt:unstructured">
+
                                     <ShowInHomeTemplate
                                         cq:showOnCreate="{Boolean}true"
                                         jcr:primaryType="nt:unstructured"
@@ -41,7 +42,39 @@
                                             sling:resourceType="wknd/components/renderconditions/template"
                                             allowedTemplateTypes="[/conf/wknd/settings/wcm/templates/home-page]"/>
                                     </ShowInHomeTemplate>
+                                    <cookiesField
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                        fieldLabel="This only shows with cookie &quot;username=Shahid&quot;"
+                                        name="./cookiesField">
+                                        <granite:rendercondition
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/renderconditions/simple"
+                                            expressionshahid="${cookie.username.value == 'Shahid'}"/>
+                                    </cookiesField>
 
+                                    <pageIsNotLocked
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                        fieldLabel="This only shows when the suffix is not locked and can be modified"
+                                        name="./widgetNotLockedCanModfy">
+                                        <rendercondition
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/foundation/renderconditions/and">
+                                            <not
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/renderconditions/not">
+                                                <islocked
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="cq/gui/components/renderconditions/islocked"
+                                                    path="${requestPathInfo.suffix}"/>
+                                            </not>
+                                            <canmodify
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="cq/gui/components/renderconditions/canmodify"
+                                                path="${requestPathInfo.suffix}"/>
+                                        </rendercondition>
+                                    </pageIsNotLocked>
                                 </items>
                             </column>
                         </items>
