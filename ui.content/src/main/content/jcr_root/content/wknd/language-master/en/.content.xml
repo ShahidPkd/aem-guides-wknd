@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2023-09-06T18:43:46.882+05:30"
+        cq:lastModifiedBy="admin"
+        cq:template="/conf/wknd/settings/wcm/templates/home-page"
+        jcr:mixinTypes="[mix:lockable]"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Home"
+        sling:resourceType="wknd/components/page">
+        <root
+            jcr:lastModified="{Date}2023-02-08T16:31:34.930+05:30"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="wknd/components/container"
+            layout="responsiveGrid">
+            <container
+                jcr:lastModified="{Date}2023-02-08T16:32:04.116+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wknd/components/container">
+                <text
+                    jcr:lastModified="{Date}2023-08-11T19:09:18.315+05:30"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wknd/components/text"
+                    text="&lt;p>This is a Content update in language en by Shahid&lt;/p>&#xd;&#xa;"
+                    textIsRich="true"/>
+                <customteaser
+                    jcr:lastModified="{Date}2023-09-06T18:43:46.878+05:30"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wknd/components/customteaser"
+                    text="sdfghm,"/>
+            </container>
+        </root>
+    </jcr:content>
+    <about-me/>
+    <contact-me/>
+    <blogs/>
+    <privacy/>
+</jcr:root>

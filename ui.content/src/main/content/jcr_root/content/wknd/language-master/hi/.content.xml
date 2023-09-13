@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:conf="\0"
+        cq:isTransCreated="{Boolean}true"
+        cq:lastModified="{Date}2023-08-04T01:49:07.406+05:30"
+        cq:lastModifiedBy="translation-job-service"
+        cq:lastTranslationDone="{Date}2023-08-04T01:43:39.223+05:30"
+        cq:lastTranslationUpdate="{Date}2023-08-04T01:46:50.216+05:30"
+        cq:template="/conf/wknd/settings/wcm/templates/home-page"
+        cq:translationJob="[/content/projects/shahid_s_languagecopy2/shahid_s_language_copy_2/jcr:content/dashboard/gadgets/translationjob0,/content/projects/shahid_s_languagecopy/shahid_s_language_copy/jcr:content/dashboard/gadgets/translationjob11]"
+        cq:translationMethod="MACHINE_TRANSLATION"
+        cq:translationProject="[/content/projects/shahid_s_languagecopy2/shahid_s_language_copy_2,/content/projects/shahid_s_languagecopy/shahid_s_language_copy]"
+        cq:translationProviderCloudConfig="/libs/settings/cloudconfigs/translation/msft-translation/msft_trial"
+        cq:translationProviderName="microsoft"
+        cq:translationSourcePath="/content/wknd/language-master/en"
+        cq:translationStatus="APPROVED"
+        jcr:isCheckedOut="{Boolean}true"
+        jcr:mixinTypes="[mix:versionable]"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Home"
+        jcr:uuid="63b20d91-b12e-4605-8636-61ce5c09dc7a"
+        sling:resourceType="wknd/components/page">
+        <root
+            jcr:lastModified="{Date}2023-08-04T01:49:07.382+05:30"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="wknd/components/container"
+            layout="responsiveGrid">
+            <container
+                jcr:lastModified="{Date}2023-08-04T01:49:07.392+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wknd/components/container">
+                <text
+                    cq:lastRolledout="{Date}2023-08-04T01:49:07.411+05:30"
+                    cq:lastRolledoutBy="translation-job-service"
+                    jcr:lastModified="{Date}2023-08-02T15:15:44.639+05:30"
+                    jcr:lastModifiedBy="admin"
+                    jcr:mixinTypes="[cq:LiveRelationship]"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wknd/components/text"
+                    text="&lt;p>This is a Content update in language en by munesh&lt;/p>&#xd;&#xa;"
+                    textIsRich="true"/>
+            </container>
+        </root>
+    </jcr:content>
+    <about-me/>
+    <contact-me/>
+    <blogs/>
+    <privacy/>
+</jcr:root>

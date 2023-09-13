@@ -1,86 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
-        cq:contextHubPath="/etc/cloudsettings/default/contexthub"
-        cq:contextHubSegmentsPath="/etc/segmentation/contexthub"
-        cq:template="/conf/wknd/settings/wcm/templates/page-content"
+        cq:lastModified="{Date}2023-08-11T19:10:37.824+05:30"
+        cq:lastModifiedBy="admin"
+        cq:lastRolledout="{Date}2023-08-11T19:10:37.825+05:30"
+        cq:lastRolledoutBy="admin"
+        cq:template="/conf/wknd/settings/wcm/templates/home-page"
+        jcr:mixinTypes="[cq:LiveRelationship,cq:LiveSync]"
         jcr:primaryType="cq:PageContent"
-        jcr:title="en"
-        sling:resourceType="wknd/components/page"
-        pageTitle="WKND Sites Project">
+        jcr:title="Home"
+        sling:resourceType="wknd/components/page">
         <root
+            cq:lastRolledout="{Date}2023-08-11T19:10:37.819+05:30"
+            cq:lastRolledoutBy="admin"
+            jcr:lastModified="{Date}2023-08-11T19:10:37.816+05:30"
+            jcr:lastModifiedBy="admin"
+            jcr:mixinTypes="[cq:LiveRelationship]"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="wknd/components/container"
             layout="responsiveGrid">
             <container
+                cq:lastRolledout="{Date}2023-08-11T19:10:37.823+05:30"
+                cq:lastRolledoutBy="admin"
+                jcr:lastModified="{Date}2023-08-11T19:10:37.821+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:mixinTypes="[cq:LiveRelationship]"
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="wknd/components/container">
-                <title
+                <text
+                    cq:lastRolledout="{Date}2023-08-11T19:10:37.825+05:30"
+                    cq:lastRolledoutBy="admin"
+                    jcr:lastModified="{Date}2023-08-11T19:10:37.824+05:30"
+                    jcr:lastModifiedBy="admin"
+                    jcr:mixinTypes="[cq:LiveRelationship]"
                     jcr:primaryType="nt:unstructured"
-                    sling:resourceType="wknd/components/title"/>
-                <container
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="wknd/components/container"
-                    layout="responsiveGrid">
-                    <teaser
-                        jcr:description="&lt;p>Don't stop half way, go for the top!&lt;/p>&#xd;&#xa;"
-                        jcr:primaryType="nt:unstructured"
-                        jcr:title="Epic Journey"
-                        sling:resourceType="wknd/components/teaser"
-                        actionsEnabled="false"
-                        descriptionFromPage="false"
-                        textIsRich="true"
-                        titleFromPage="false">
-                        <cq:responsive jcr:primaryType="nt:unstructured">
-                            <default
-                                jcr:primaryType="nt:unstructured"
-                                offset="0"
-                                width="4"/>
-                        </cq:responsive>
-                    </teaser>
-                    <teaser_copy
-                        jcr:description="&lt;p>Don't stop half way, go for the top!&lt;/p>&#xd;&#xa;"
-                        jcr:primaryType="nt:unstructured"
-                        jcr:title="Epic Journey"
-                        sling:resourceType="wknd/components/teaser"
-                        actionsEnabled="false"
-                        descriptionFromPage="false"
-                        textIsRich="true"
-                        titleFromPage="false">
-                        <cq:responsive jcr:primaryType="nt:unstructured">
-                            <default
-                                jcr:primaryType="nt:unstructured"
-                                offset="0"
-                                width="4"/>
-                        </cq:responsive>
-                    </teaser_copy>
-                    <teaser_copy_1579324932
-                        jcr:description="&lt;p>Don't stop half way, go for the top!&lt;/p>&#xd;&#xa;"
-                        jcr:primaryType="nt:unstructured"
-                        jcr:title="Epic Journey"
-                        sling:resourceType="wknd/components/teaser"
-                        actionsEnabled="false"
-                        descriptionFromPage="false"
-                        textIsRich="true"
-                        titleFromPage="false">
-                        <cq:responsive jcr:primaryType="nt:unstructured">
-                            <default
-                                jcr:primaryType="nt:unstructured"
-                                offset="0"
-                                width="4"/>
-                        </cq:responsive>
-                    </teaser_copy_1579324932>
-                    <helloworld
-                        jcr:primaryType="nt:unstructured"
-                        sling:resourceType="wknd/components/helloworld"
-                        text="lalala :)"/>
-                </container>
+                    sling:resourceType="wknd/components/text"
+                    text="&lt;p>This is a Content update in language en by Shahid&lt;/p>&#xd;&#xa;"
+                    textIsRich="true"/>
             </container>
         </root>
+        <cq:LiveSyncConfig
+            cq:isDeep="{Boolean}false"
+            cq:master="/content/wknd/language-master/en"
+            cq:rolloutConfigs="[/libs/msm/wcm/rolloutconfigs/default]"
+            jcr:primaryType="cq:LiveCopy"/>
     </jcr:content>
+    <about-me/>
+    <contact-me/>
     <blogs/>
-    <search/>
     <home/>
     <home-page/>
+    <search/>
 </jcr:root>

@@ -29,7 +29,6 @@
                                 value="{Boolean}true"/>
                         </items>
                     </main>
-
                     <customTab
                         jcr:primaryType="nt:unstructured"
                         jcr:title="Custom Styles Tab"

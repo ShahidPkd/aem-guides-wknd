@@ -28,7 +28,6 @@
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/container">
                                 <items jcr:primaryType="nt:unstructured">
-
                                     <ShowInHomeTemplate
                                         cq:showOnCreate="{Boolean}true"
                                         jcr:primaryType="nt:unstructured"
@@ -52,7 +51,6 @@
                                             sling:resourceType="granite/ui/components/coral/foundation/renderconditions/simple"
                                             expressionshahid="${cookie.username.value == 'Shahid'}"/>
                                     </cookiesField>
-
                                     <pageIsNotLocked
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/foundation/form/textfield"

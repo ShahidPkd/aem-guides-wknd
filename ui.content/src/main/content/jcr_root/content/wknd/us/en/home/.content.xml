@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
         cq:lastModified="{Date}2023-02-13T15:29:08.013+05:30"
@@ -15,15 +15,11 @@
             sling:resourceType="wknd/components/container"
             layout="responsiveGrid">
             <container
-                jcr:created="{Date}2023-02-08T16:31:45.934+05:30"
-                jcr:createdBy="admin"
                 jcr:lastModified="{Date}2023-02-08T16:32:04.116+05:30"
                 jcr:lastModifiedBy="admin"
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="wknd/components/container">
                 <myblogs
-                    jcr:created="{Date}2023-02-13T15:25:41.352+05:30"
-                    jcr:createdBy="admin"
                     jcr:lastModified="{Date}2023-02-13T15:29:08.011+05:30"
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"

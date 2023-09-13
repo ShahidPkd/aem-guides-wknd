@@ -1,43 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
-        cq:lastModified="{Date}2022-11-17T15:25:16.489+05:30"
+        cq:lastModified="{Date}2023-07-31T19:25:58.908+05:30"
         cq:lastModifiedBy="admin"
+        cq:lastRolledout="{Date}2023-07-31T19:25:58.909+05:30"
+        cq:lastRolledoutBy="admin"
         cq:template="/conf/wknd/settings/wcm/templates/page-content"
+        jcr:mixinTypes="[cq:LiveRelationship,cq:LiveSync]"
         jcr:primaryType="cq:PageContent"
         jcr:title="Blogs"
         sling:resourceType="wknd/components/page">
         <root
+            cq:lastRolledout="{Date}2023-07-31T19:25:58.904+05:30"
+            cq:lastRolledoutBy="admin"
+            jcr:mixinTypes="[cq:LiveRelationship]"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="wknd/components/container"
             layout="responsiveGrid">
             <container
+                cq:lastRolledout="{Date}2023-07-31T19:25:58.906+05:30"
+                cq:lastRolledoutBy="admin"
+                jcr:mixinTypes="[cq:LiveRelationship]"
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="wknd/components/container"
                 layout="responsiveGrid">
                 <title
+                    cq:lastRolledout="{Date}2023-07-31T19:25:58.908+05:30"
+                    cq:lastRolledoutBy="admin"
+                    jcr:mixinTypes="[cq:LiveRelationship]"
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="wknd/components/title"/>
                 <container
+                    cq:lastRolledout="{Date}2023-07-31T19:25:58.909+05:30"
+                    cq:lastRolledoutBy="admin"
+                    jcr:mixinTypes="[cq:LiveRelationship]"
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="wknd/components/container"
                     layout="responsiveGrid"/>
             </container>
         </root>
+        <cq:LiveSyncConfig
+            cq:isDeep="{Boolean}true"
+            cq:master="/content/wknd/language-master/en/blogs"
+            cq:rolloutConfigs="[/libs/msm/wcm/rolloutconfigs/default]"
+            jcr:primaryType="cq:LiveCopy"/>
     </jcr:content>
     <about-us/>
+    <add-dialog-in-any-activity--fragment-in-android--java-/>
+    <aem-resource-resolver---query-builder---with-use-case-example/>
+    <components-in-aem---different-types-of-component-in-aem/>
     <contact-us/>
+    <create-html-string-text-alert-dialog-with-link-clickable-in-andr/>
+    <fetch-full-address--latitude-and-longitude-in-android-also-live-/>
+    <how-to-create-policy-in-aem-----policy-in-aem-2022/>
     <privacy-and-policy/>
     <shahid-ji-ka-idea/>
-    <what-is-cms---list-of-cms---aem-cms/>
-    <aem-resource-resolver---query-builder---with-use-case-example/>
-    <what-is-servlet-in-aem-----types-of-servlet---create-servlet-in-/>
-    <what-is-aem---how-to-setup-aem--/>
     <slings-model-and-htl--sightly----slings-model-and-htl-in-aem/>
-    <components-in-aem---different-types-of-component-in-aem/>
-    <how-to-create-policy-in-aem-----policy-in-aem-2022/>
-    <fetch-full-address--latitude-and-longitude-in-android-also-live-/>
-    <create-html-string-text-alert-dialog-with-link-clickable-in-andr/>
-    <add-dialog-in-any-activity--fragment-in-android--java-/>
+    <what-is-aem---how-to-setup-aem--/>
+    <what-is-cms---list-of-cms---aem-cms/>
+    <what-is-servlet-in-aem-----types-of-servlet---create-servlet-in-/>
 </jcr:root>

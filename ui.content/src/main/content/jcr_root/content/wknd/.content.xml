@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
         cq:allowedTemplates="[/conf/wknd/settings/wcm/templates/(?!xf-).*]"
         cq:conf="/conf/wknd"
         cq:redirectTarget="/content/wknd/us/en"
         cq:template="/conf/wknd/settings/wcm/templates/page-content"
+        jcr:isCheckedOut="{Boolean}true"
+        jcr:mixinTypes="[mix:versionable]"
         jcr:primaryType="cq:PageContent"
         jcr:title="WKND Sites Project"
+        jcr:uuid="7bf85557-b070-438b-a237-227df8c2c87a"
         sling:configRef="/conf/wknd"
         sling:redirect="{Boolean}true"
         sling:redirectStatus="{Long}302"
@@ -16,5 +19,7 @@
             <file/>
         </image>
     </jcr:content>
+    <language-master/>
+    <in/>
     <us/>
 </jcr:root>

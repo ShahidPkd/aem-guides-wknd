@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2023-07-31T19:44:33.820+05:30"
+        cq:lastModifiedBy="admin"
+        cq:template="/conf/wknd/settings/wcm/templates/home-page"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Language Master"
+        sling:resourceType="wknd/components/page"
+        pwaCachestrategy="staleWhileRevalidate"
+        pwaDisplay="standalone"
+        pwaOrientation="any">
+        <root
+            jcr:lastModified="{Date}2023-02-08T16:31:34.930+05:30"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="wknd/components/container"
+            layout="responsiveGrid">
+            <container
+                jcr:lastModified="{Date}2023-02-08T16:32:04.116+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wknd/components/container"/>
+        </root>
+        <cq:BlueprintSyncConfig
+            cq:rolloutConfigs="[/libs/msm/wcm/rolloutconfigs/default]"
+            jcr:primaryType="cq:BlueprintSyncConfig"/>
+    </jcr:content>
+    <en/>
+    <zh/>
+    <ur/>
+    <sv/>
+    <ja/>
+    <it/>
+    <hi/>
+    <he/>
+    <fr/>
+    <es/>
+    <el/>
+    <de/>
+    <bg/>
+    <ar/>
+</jcr:root>
