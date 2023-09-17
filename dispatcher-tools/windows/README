@@ -1,0 +1,7 @@
+Please go to docs/README.html to find the documentation. (this line comess from disptcher)
+
+Here is my process
+1 >   C:\AEM\dispatcher\aem-sdk-dispatcher-tools-2.0.121-windows\bin>validator.exe full -d ../out ../src  
+hit first one and will generete out folder with all configuration.
+2 >   C:\AEM\dispatcher\aem-sdk-dispatcher-tools-2.0.121-windows\bin>docker_run.cmd ..\out host.docker.internal:4503 80
+to start dispatcher with apache server before 2 make sure docker is runing.
