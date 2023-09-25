@@ -89,6 +89,7 @@ public class UpdateAuthorByLineForArticlesServlet extends SlingSafeMethodsServle
         if(articleResource != null && authorResource != null){
             ModifiableValueMap map = articleResource.adaptTo(ModifiableValueMap.class);
             ModifiableValueMap authorPublish = authorResource.adaptTo(ModifiableValueMap.class);
+            // publishing articles only when author is already published.
             if(authorPublish.get(PUBLISH_PROPERTY_NAME, "").equalsIgnoreCase("Activate")){
                 map.put(AUTHOR_PROPERTY_NAME, authorPath);
                 resourceResolver.commit();
