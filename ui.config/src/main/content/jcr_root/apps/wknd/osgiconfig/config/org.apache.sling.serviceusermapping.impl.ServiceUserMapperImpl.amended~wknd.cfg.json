@@ -1,0 +1,4 @@
+{
+    "service.ranking": "0",
+    "user.mapping": ["aem-guides-wknd.core:wknd-service-dam=[wknd-service-dam]","aem-guides-wknd.core:wknd-service-sites=[wknd-service-sites]","aem-guides-wknd.core:trex-service-conf=[wknd-service-conf]"]
+}

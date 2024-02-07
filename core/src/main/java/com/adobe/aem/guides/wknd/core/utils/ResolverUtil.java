@@ -25,7 +25,7 @@ public final class ResolverUtil {
      */
     public static ResourceResolver newResolver(ResourceResolverFactory resourceResolverFactory) throws LoginException {
         final Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put(ResourceResolverFactory.SUBSERVICE, GEEKS_SERVICE_USER);
+        paramMap.put(ResourceResolverFactory.SUBSERVICE, "wknd-service-sites");
 
         // fetches the admin service resolver using service user.
         ResourceResolver resolver = resourceResolverFactory.getServiceResourceResolver(paramMap);
