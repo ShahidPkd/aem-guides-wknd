@@ -1,0 +1,42 @@
+#
+# This file contains the filter ACL, and can be customized.
+#
+# By default, it includes the default filter ACL.
+#
+
+$include "./default_filters.any"
+
+# Allow components JSON model
+/0101 { /type "allow" /extension "json" /selectors "model" /path "/content/*" }
+
+# Allow manifest.webmanifest files located in the content
+/0102 { /type "allow" /extension "webmanifest" /path "/content/*/manifest" }
+
+/0110 { /type "allow" /path "/services/trex/*" }
+
+# Allow access to the robots.txt file only (by default all asset types are allowed, but not .txt)
+/0111 { /type "allow" /extension "txt" /path "/content/dam/trex/robots" }
+
+# Commerce proxy
+/0112 { /type "allow" /path "/api/graphql" }
+
+# i18n dictionary via JavaScript
+/0113 { /type "allow" /path "/libs/cq/i18n/*" }
+
+# Sitemap
+/0114 { /type "allow" /method "GET" /url "/content/*/*/*.sitemap.xml" }
+
+# Allow grabbing of Trex components with ajax calls
+/0115 { /type "allow" /selectors '([0-9-]+)' /extension "html" /url "/content/trex/*/_jcr_content/root/*" }
+
+# Allow grabbing of Trex components with ajax calls
+/0116 { /type "allow" /selectors '([0-9-]+)' /extension "html" /url "/content/trex/*" }
+
+# Allow additional file types that are not enabled by default
+/0117 { /type "allow" /extension '(doc|docx)' /path "/content/*" }
+
+# Allow error code test servlet
+/0118 { /type "allow" /method "GET" /path "/services/trex/error-test" }
+
+# Sitemap Index
+/0119 { /type "allow" /method "GET" /url "/content/*/*/*.sitemapindex.xml" }

@@ -1,0 +1,21 @@
+Both Mac and Windows are using version 2.0.65 in the codebase as of 9/10/21
+
+In the docker_run.sh and docker_run.cmd files, we've altered them slightly to add a "local" environment option.
+
+so instead of just "dev stage prod"
+we allow for "local dev stage prod"
+
+This lets us create a proxy for commerce ONLY locally, ex.
+
+<IfDefine ENVIRONMENT_LOCAL>
+    ProxyErrorOverride off
+    ProxyPass         /api/graphql http://host.docker.internal:3001
+    ProxyPassReverse  /api/graphql http://host.docker.internal:3001
+</IfDefine>
+
+Example command to run docker_run from within the bin directory in a local environment is:
+
+Mac:      > DISP_RUN_MODE=local ./docker_run.sh out host.docker.internal:4503 80
+
+Windows:  > set DISP_RUN_MODE=local
+          > docker_run.cmd out host.docker.internal:4503 80

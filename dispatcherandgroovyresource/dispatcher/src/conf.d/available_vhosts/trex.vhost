@@ -1,0 +1,105 @@
+#
+# This is the Trex publish virtualhost definition for Apache. 
+#
+# This was copied from the conf.d/available_vhosts/default.vhost.
+# Then we removed the default.vhost symlink file in conf.d/enabled_vhosts and created a new
+# Symlink file by running the following command:
+# mklink "{Path to Your Code Folder}\dispatcher\src\conf.d\enabled_vhosts\trex.vhost" "{Path to Your Code Folder}\dispatcher\src\conf.d\available_vhosts\trex.vhost"
+
+# Include customer defined variables
+Include conf.d/variables/custom.vars
+
+<VirtualHost *:80>
+	ServerName	"publish"
+	# Put names of which domains are used for your published site/content here
+	ServerAlias	 "*"
+	# Use a document root that matches the one in conf.dispatcher.d/default.farm
+	DocumentRoot "${DOCROOT}"
+	# Add header breadcrumbs for help in troubleshooting
+	<IfModule mod_headers.c>
+		Header add X-Vhost "publish"
+	</IfModule>
+
+    # Cache settings for specific content #
+
+    # Images/Video from DAM: cache mutable resources for 10h on CDN and background refresh to avoid MISS
+    <LocationMatch "^/content/dam/.*\.(?i:jpe?g|gif|js|mov|png|svg|txt|zip|ico)$">
+        Header set Cache-Control "max-age=3000,s-maxage=36000,stale-while-revalidate=18000,stale-if-error=18000" "expr=%{REQUEST_STATUS} < 400"
+        Header set Age 0
+    </LocationMatch>
+
+    # Header rules specific to robots.txt files.
+    <LocationMatch "^/content/dam/.*/robots.txt$">
+        # Forces content disposition type for robots.txt file to "inline" as oppose to "attachment" which is the default.
+        ForceType text/plain
+        Header set Content-Disposition inline
+
+        # Sets explicit no-cache for robots.txt files
+        Header set Cache-Control "no-cache"
+    </LocationMatch>
+
+	<Directory />
+		<IfModule disp_apache2.c>
+			# Some items cache with the wrong mime type
+			# Use this option to use the name to auto-detect mime types when cached improperly
+			ModMimeUsePathInfo On
+			# Use this option to avoid cache poisioning
+			# Sling will return /content/image.jpg as well as /content/image.jpg/ but apache can't search /content/image.jpg/ as a file
+			# Apache will treat that like a directory.  This assures the last slash is never stored in cache
+			DirectorySlash Off
+			# Enable the dispatcher file handler for apache to fetch files from AEM
+			SetHandler dispatcher-handler
+		</IfModule>
+		Options FollowSymLinks
+		AllowOverride None
+		# Insert filter
+		SetOutputFilter DEFLATE
+		# Don't compress images
+		SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+		# Make sure proxies don't deliver the wrong content
+		# Header append Vary User-Agent env=!dont-vary # commented out as an Adobe recommendation to increase CDN caching performance
+		# Prevent clickjacking
+		Header always append X-Frame-Options SAMEORIGIN
+		Header set Content-Security-Policy "frame-ancestors 'self' http://umbracodev.trex.com https://umbracodev.trex.com https://umbracostaging.trex.com https://nextrex.com https://www.nextrex.com https://www.google.com/recaptcha/api.js" 
+
+		# Error handling for 500 errors, and other errors that could happen (we will only have 2 error pages, 1 for 404 and 1 for all others)
+		ErrorDocument 500 ${DEFAULT_ERROR_PAGE}
+		ErrorDocument 502 ${DEFAULT_ERROR_PAGE}
+
+		# If the system is down, use a static file rather than attempting to retrieve a page from AEM
+		# For now, we will use Umbraco to serve the static page - we will use a rewrite rule to actually 301 redirect the user to the static page
+		# so that we can bypass the Adobe error page screen
+		ErrorDocument 503 /503-static-error-page
+
+		ErrorDocument 504 ${DEFAULT_ERROR_PAGE}
+		ErrorDocument 400 ${DEFAULT_ERROR_PAGE}
+		ErrorDocument 403 ${DEFAULT_ERROR_PAGE}
+		ErrorDocument 408 ${DEFAULT_ERROR_PAGE}
+		ErrorDocument 404 /errors/404/
+	</Directory>
+	<Directory "${DOCROOT}">
+		AllowOverride None
+		Require all granted
+	</Directory>
+	<IfModule disp_apache2.c>
+		# Enabled to allow rewrites to take affect and not be ignored by the dispatcher module
+		DispatcherUseProcessedURL	On
+		# Default setting is 0 to allow all errors to come from the aem instance
+		# Changed to 1 to allow Apache to handle all errors, to ensure that we can present a custom 500 page if anything goes wrong
+		DispatcherPassError		1
+	</IfModule>
+	<IfModule mod_rewrite.c>
+		RewriteEngine	on
+		Include conf.d/rewrites/rewrite.rules
+
+		# Rewrite index page internally, pass through (PT)
+		RewriteRule "^(/?)$" "/index.html" [PT]
+
+        <IfDefine ENVIRONMENT_LOCAL>
+            ProxyErrorOverride off
+            ProxyPass         /api/graphql http://host.docker.internal:3001
+            ProxyPassReverse  /api/graphql http://host.docker.internal:3001
+        </IfDefine>
+
+	</IfModule>
+</VirtualHost>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dispatcher Configuration</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Dispatcher Configuration</h1>
+</header>
+<p>The folder <a href="../src">src</a> contains an initial Dispatcher Configuration. In order to use that configuration in your environment, copy that folder to your AEM application’s <code>dispatcher</code> folder.</p>
+<p>If you’re converting AMS dispatcher configuration files, there is a manual in <a href="./TransitionFromAMS.html">How to convert an AMS to an dispatcher configuration</a></p>
+<h2 id="configuration-structure">Configuration structure</h2>
+<pre><code>./
+├── conf.d
+│   ├── available_vhosts
+│   │   └── default.vhost
+│   ├── dispatcher_vhost.conf
+│   ├── enabled_vhosts
+│   │   ├── README
+│   │   └── default.vhost -&gt; ../available_vhosts/default.vhost
+│   └── rewrites
+│   │   ├── default_rewrite.rules
+│   │   └── rewrite.rules
+│   └── variables
+|       ├── custom.vars
+│       └── global.vars
+└── conf.dispatcher.d
+    ├── available_farms
+    │   └── default.farm
+    ├── cache
+    │   ├── default_invalidate.any
+    │   ├── default_rules.any
+    │   └── rules.any
+    ├── clientheaders
+    │   ├── clientheaders.any
+    │   └── default_clientheaders.any
+    ├── dispatcher.any
+    ├── enabled_farms
+    │   ├── README
+    │   └── default.farm -&gt; ../available_farms/default.farm
+    ├── filters
+    │   ├── default_filters.any
+    │   └── filters.any
+    ├── renders
+    │   └── default_renders.any
+    └── virtualhosts
+        ├── default_virtualhosts.any
+        └── virtualhosts.any</code></pre>
+<h2 id="customizable-files">Customizable files</h2>
+<p>The following files are customizable and will get transferred to your Cloud instance on deployment:</p>
+<ul>
+<li><p><code>conf.d/available_vhosts/&lt;CUSTOMER_CHOICE&gt;.vhost</code></p>
+<p>You can have one or more of these files, and they contain <code>&lt;VirtualHost&gt;</code> entries to match host names and allow Apache to handle each domain traffic with different rules. Files are created in the <code>available_vhosts</code> directory and enabled with a symbolic link in the <code>enabled_vhosts</code> directory. From the <code>.vhost</code> files, other files like rewrites and variables will be included.</p></li>
+<li><p><code>conf.d/rewrites/rewrite.rules</code></p>
+<p>This file is included from inside your <code>.vhost</code> files. It has a set of rewrite rules for <code>mod_rewrite</code>.</p></li>
+<li><p><code>conf.d/variables/custom.vars</code></p>
+<p>This file is included from inside your <code>.vhost</code> files. You can put defines for Apache variables in there.</p></li>
+<li><p><code>conf.d/variables/global.vars</code></p>
+<p>This file is included from inside the <code>dispatcher_vhost.conf</code> file. You can change your dispatcher and rewrite log level in there.</p></li>
+<li><p><code>conf.dispatcher.d/available_farms/&lt;CUSTOMER_CHOICE&gt;.farm</code></p>
+<p>You can have one or more of these files, and they contain farms to match host names and allow the dispatcher module to handle each farm with different rules. Files are created in the <code>available_farms</code> directory and enabled with a symbolic link in the <code>enabled_farms</code> directory. From the <code>.farm</code> files, other files like filters, cache rules and others will be included.</p></li>
+<li><p><code>conf.dispatcher.d/cache/rules.any</code></p>
+<p>This file is included from inside your <code>.farm</code> files. It specifies caching preferences.</p></li>
+<li><p><code>conf.dispatcher.d/clientheaders/clientheaders.any</code></p>
+<p>This file is included from inside your <code>.farm</code> files. It specifies what request headers should be forwarded to the backend.</p></li>
+<li><p><code>conf.dispatcher.d/filters/filters.any</code></p>
+<p>This file is included from inside your <code>.farm</code> files. It has a set of rules that change what traffic should be filtered out and not make it to the backend.</p></li>
+<li><p><code>conf.dispatcher.d/virtualhosts/virtualhosts.any</code></p>
+<p>This file is included from inside your <code>.farm</code> files. It has a list of host names or URI paths to be matched by glob matching to determine what backend to use to serve a request.</p></li>
+</ul>
+<h2 id="environment-variables">Environment Variables</h2>
+<ul>
+<li><p><code>DOCROOT</code></p>
+<p>The Apache base document root. If you have one virtual host and farm, use that variable as document root. In case of a multisite setup with sites located in a subtree, use an appropriate subfolder of that document root.</p></li>
+<li><p><code>ENVIRONMENT_TYPE</code></p>
+<p>The environment type of your image, either <code>dev</code>, <code>stage</code> or <code>prod</code>.</p></li>
+</ul>
+<h2 id="immutable-configuration-files">Immutable Configuration Files</h2>
+<p>These files are part of the base framework and enforce standards and best practices. They should be considered immutable, because modifying or deleting them locally will have no impact on your deployment, as they will not get transferred to your Cloud instance.</p>
+<ul>
+<li><p><code>conf.d/available_vhosts/default.vhost</code></p>
+<p>Contains a sample virtual host. For your own virtual host, create a copy of this file, customize it, go to <code>conf.d/enabled_vhosts</code> and create a symbolic link to your customized copy.</p></li>
+<li><p><code>conf.d/dispatcher_vhost.conf</code></p>
+<p>Part of base framework, used to illustrate how your virtual hosts and global variables are included.</p></li>
+<li><p><code>conf.d/rewrites/default_rewrite.rules</code></p>
+<p>Default rewrite rules suitable for a standard project. If you need customization, modify <code>rewrite.rules</code>. In your customization, you can still include the default rules first, if they suit your needs.</p></li>
+<li><p><code>conf.dispatcher.d/available_farms/default.farm</code></p>
+<p>Contains a sample dispatcher farm. For your own farm, create a copy of this file, customize it, go to <code>conf.d/enabled_farms</code> and create a symbolic link to your customized copy.</p></li>
+<li><p><code>conf.dispatcher.d/cache/default_invalidate.any</code></p>
+<p>Part of base framework, gets generated on startup. You are <strong>required</strong> to include this file in every farm you define, in the <code>cache/allowedClients</code> section.</p></li>
+<li><p><code>conf.dispatcher.d/cache/default_rules.any</code></p>
+<p>Default cache rules suitable for a standard project. If you need customization, modify <code>conf.dispatcher.d/cache/rules.any</code>. In your customization, you can still include the default rules first, if they suit your needs.</p></li>
+<li><p><code>conf.dispatcher.d/clientheaders/default_clientheaders.any</code></p>
+<p>Default request headers to forward to backend, suitable for a standard project. If you need customization, modify <code>clientheaders.any</code>. In your customization, you can still include the default request headers first, if they suit your needs.</p></li>
+<li><p><code>conf.dispatcher.d/dispatcher.any</code></p>
+<p>Part of base framework, used to illustrate how your dispatcher farms are included.</p></li>
+<li><p><code>conf.dispatcher.d/filters/default_filters.any</code></p>
+<p>Default filters suitable for a standard project. If you need customization, modify <code>filters.any</code>. In your customization, you can still include the default filters first, if they suit your needs.</p></li>
+<li><p><code>conf.dispatcher.d/renders/default_renders.any</code></p>
+<p>Part of base framework, gets generated on startup. You are <strong>required</strong> to include this file in every farm you define, in the <code>renders</code> section.</p></li>
+<li><p><code>conf.dispatcher.d/virtualhosts/default_virtualhosts.any</code></p>
+<p>Default host globbing suitable for a standard project. If you need customization, modify <code>virtualhosts.any</code>. In your customization, you <em>shouldn’t</em> include the default host globbing, as it matches <strong>every</strong> incoming request.</p></li>
+</ul>
+<p>You can check that no immutable configuration file was changed by running immutability check as described in <a href="./README.html">Quick walkthrough of local development and testing</a>. You can also get the latest version of immutable configuration files compatible with this version of SDK as described there.</p>
+</body>
+</html>

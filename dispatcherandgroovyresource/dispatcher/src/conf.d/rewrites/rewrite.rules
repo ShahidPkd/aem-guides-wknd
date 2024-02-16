@@ -1,0 +1,3977 @@
+#
+# This file contains the rewrite rules, and can be customized.
+#
+# By default, it includes just the rewrite rules. You can
+# add rewrite rules to this file but you should still include
+# the default rewrite rules.
+#
+# *** DISPATCHER SETUP NOTE ***
+# To use these rewrites, you must also run the following command in your Dispatcher folder. 
+# This will add the rewrites to a location where Dispatcher can read them.
+#
+# validator.exe full -d out path\to\your\source\code\dispatcher\src
+# 
+
+Include conf.d/rewrites/default_rewrite.rules
+
+# Special handling for the static error page in the event of a 503 (service unavailable) exception
+# this is needed in order to bypass the cloud error page that Adobe puts up by default
+RewriteRule ^/503-static-error-page /static/error.html [L,R=302]
+
+# Special handling of generic error pages to send a 302 instead of a 301, so the browser doesn't cache the redirect
+RewriteRule ^/5xx-error-page /errors/ [L,R=302]
+
+# class action lawsuit - needed for legal reasons - just rewrite to the exact correct URL
+# so that we don't have to worry about passing through to the other rules in here
+# (it's US-only)
+RewriteRule ^/legal/classactionsettlement.aspx /content/${CONTENT_FOLDER_NAME}/us/en/customer-support/trex-owners/warranty-claim/class-action-settlements/2010classactionsettlement.html [PT]
+RewriteRule ^/legal/2013classactionsettlement.aspx /content/${CONTENT_FOLDER_NAME}/us/en/customer-support/trex-owners/warranty-claim/class-action-settlements/2013classactionsettlement.html [PT]
+
+# robots and sitemap
+RewriteRule ^/robots.txt$ /content/dam/${CONTENT_FOLDER_NAME}/robots.txt [NC,PT]
+RewriteRule ^/sitemap.xml$ /content/${CONTENT_FOLDER_NAME}/us/en.sitemapindex.xml [NC,PT]
+
+# add www. to the beginning of any URLs that don't have a subdomain (i.e. https://trex.com)
+RewriteCond %{HTTP_HOST} ^[^.]+\.[^.]+$
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}$1 [L,R=301]
+
+# if a URL has any upper-cased characters, redirect to the lower-cased version
+# https://trex.atlassian.net/browse/WEC-217
+# don't apply to the DAM
+RewriteMap  lc int:tolower
+RewriteCond %{REQUEST_URI} [A-Z]
+RewriteCond %{REQUEST_URI} !^/content/dam
+RewriteRule (.*) ${lc:$1} [R=301,L]
+
+# if any URL starts with /content/trex/language-masters, redirect to the US version of the page to ensure that users
+# can never actually get to a language-masters URL
+RewriteCond %{REQUEST_URI} ^/content/${CONTENT_FOLDER_NAME}/language-masters/en/?(.*)(.html|/)
+RewriteRule ^(.*)$ %1/ [L,R=301]
+
+# rewrite rule to remove .html from the end of our URLs, and add final slash
+# excluding /content/dam shouldn't really be necessary, but just in case they decide to store .html files
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/content/dam
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^(.*)\.html$ $1/ [L,R=301]
+
+# if URL doesn't end in .html but also doesn't end in a slash, and isn't an image, then add the slash there too
+# but be careful not to add the slash for anything other than full pages
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} !(.jpe?g|.png|.svg)$
+RewriteRule ^(.*)([^/])$ $1$2/ [L,R=301]
+
+#############################################################################
+# Home Page Rewrites - So all domains rewrite to the correct root content node
+#############################################################################
+
+# Australia (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^au-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/au/en-au.html [PT,L]
+
+# Australia (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^au.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/au/en-au.html [PT,L]
+
+# Australia (QA)
+RewriteCond %{HTTP_HOST} ^au-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/au/en-au.html [PT,L]
+
+# Australia (staging)
+RewriteCond %{HTTP_HOST} ^au-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/au/en-au.html [PT,L]
+
+# Austria (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^at-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/at/de.html [PT,L]
+
+# Austria (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^at.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/at/de.html [PT,L]
+
+# Austria (QA)
+RewriteCond %{HTTP_HOST} ^at-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/at/de.html [PT,L]
+
+# Austria (staging)
+RewriteCond %{HTTP_HOST} ^at-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/at/de.html [PT,L]
+
+# Bahrain (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^bh.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/bh/en.html [PT,L]
+
+# Brazil (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^br-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/br/pt.html [PT,L]
+
+# Brazil (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^br.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/br/pt.html [PT,L]
+
+# Brazil (QA)
+RewriteCond %{HTTP_HOST} ^br-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/br/pt.html [PT,L]
+
+# Brazil (staging)
+RewriteCond %{HTTP_HOST} ^br-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/br/pt.html [PT,L]
+
+# Canada (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^ca-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca.html [PT,L]
+
+# Canada (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^ca.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca.html [PT,L]
+
+# Canada (QA)
+RewriteCond %{HTTP_HOST} ^ca-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca.html [PT,L]
+
+# Canada (staging)
+RewriteCond %{HTTP_HOST} ^ca-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca.html [PT,L]
+
+# Chile (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^cl-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cl/es.html [PT,L]
+
+# Chile (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^cl.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cl/es.html [PT,L]
+
+# Chile (QA)
+RewriteCond %{HTTP_HOST} ^cl-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cl/es.html [PT,L]
+
+# Chile (staging)
+RewriteCond %{HTTP_HOST} ^cl-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cl/es.html [PT,L]
+
+# Colombia (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^co-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/co/es.html [PT,L]
+
+# Colombia (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^co.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/co/es.html [PT,L]
+
+# Colombia (QA)
+RewriteCond %{HTTP_HOST} ^co-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/co/es.html [PT,L]
+
+# Colombia (staging)
+RewriteCond %{HTTP_HOST} ^co-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/co/es.html [PT,L]
+
+# Costa Rica (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^cr-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cr/es.html [PT,L]
+
+# Costa Rica (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^cr.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cr/es.html [PT,L]
+
+# Costa Rica (QA)
+RewriteCond %{HTTP_HOST} ^cr-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cr/es.html [PT,L]
+
+# Costa Rica (staging)
+RewriteCond %{HTTP_HOST} ^cr-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cr/es.html [PT,L]
+
+# Cyprus (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^cy.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cy/en.html [PT,L]
+
+# Czech Republic (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^cz-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cz/cs.html [PT,L]
+
+# Czech Republic (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^cz.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cz/cs.html [PT,L]
+
+# Czech Republic (QA)
+RewriteCond %{HTTP_HOST} ^cz-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cz/cs.html [PT,L]
+
+# Czech Republic (staging)
+RewriteCond %{HTTP_HOST} ^cz-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/cz/cs.html [PT,L]
+
+# Fiji (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^fj.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/fj/en.html [PT,L]
+
+# France (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^fr-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/fr/fr.html [PT,L]
+
+# France (staging)
+RewriteCond %{HTTP_HOST} ^fr-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/fr/fr.html [PT,L]
+
+# France (QA)
+RewriteCond %{HTTP_HOST} ^fr-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/fr/fr.html [PT,L]
+
+# France (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^fr.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/fr/fr.html [PT,L]
+
+# Germany (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^de.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/de/de.html [PT,L]
+
+# Germany (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^de-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/de/de.html [PT,L]
+
+# Germany (QA)
+RewriteCond %{HTTP_HOST} ^de-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/de/de.html [PT,L]
+
+# Germany (staging)
+RewriteCond %{HTTP_HOST} ^de-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/de/de.html [PT,L]
+
+# India (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^in.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/in/en.html [PT,L]
+
+# Ireland (QA)
+RewriteCond %{HTTP_HOST} ^ie-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie.html [PT,L]
+
+# Ireland (stage)
+RewriteCond %{HTTP_HOST} ^ie-aemstaginge.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie.html [PT,L]
+
+# Ireland (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^ie.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie.html [PT,L]
+
+# Kuwait (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^kw.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/kw/en.html [PT,L]
+
+# Mexico (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^mx-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/mx/es.html [PT,L]
+
+# Mexico (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^mx.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/mx/es.html [PT,L]
+
+# Mexico (QA)
+RewriteCond %{HTTP_HOST} ^mx-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/mx/es.html [PT,L]
+
+# Mexico (staging)
+RewriteCond %{HTTP_HOST} ^mx-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/mx/es.html [PT,L]
+
+# Netherlands (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^nl-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/nl/nl.html [PT,L]
+
+# Netherlands (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^nl.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/nl/nl.html [PT,L]
+
+# Netherlands (QA)
+RewriteCond %{HTTP_HOST} ^nl-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/nl/nl.html [PT,L]
+
+# Netherlands (staging)
+RewriteCond %{HTTP_HOST} ^nl-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/nl/nl.html [PT,L]
+
+# Norway (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^no-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/no/no.html [PT,L]
+
+# Norway (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^no.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/no/no.html [PT,L]
+
+# Norway (QA)
+RewriteCond %{HTTP_HOST} ^no-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/no/no.html [PT,L]
+
+# Norway (staging)
+RewriteCond %{HTTP_HOST} ^no-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/no/no.html [PT,L]
+
+# Oman (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^om.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/om/en.html [PT,L]
+
+# Qatar (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^qa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/qa/en.html [PT,L]
+
+# Saudi Arabia (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^sa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/sa/en.html [PT,L]
+
+# South Africa (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^za.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/za/en.html [PT,L]
+
+# Spain (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^es-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/es/es.html [PT,L]
+
+# Spain (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^es.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/es/es.html [PT,L]
+
+# Spain (QA)
+RewriteCond %{HTTP_HOST} ^es-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/es/es.html [PT,L]
+
+# Spain (staging)
+RewriteCond %{HTTP_HOST} ^es-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/es/es.html [PT,L]
+
+# Sweden (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^se-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/se/sv.html [PT,L]
+
+# Sweden (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^se.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/se/sv.html [PT,L]
+
+# Sweden (QA)
+RewriteCond %{HTTP_HOST} ^se-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/se/sv.html [PT,L]
+
+# Sweden (staging)
+RewriteCond %{HTTP_HOST} ^se-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/se/sv.html [PT,L]
+
+# Switzerland (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^ch-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ch/de.html [PT,L]
+
+# Switzerland (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^ch.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ch/de.html [PT,L]
+
+# Switzerland (QA)
+RewriteCond %{HTTP_HOST} ^ch-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ch/de.html [PT,L]
+
+# Switzerland (staging)
+RewriteCond %{HTTP_HOST} ^ch-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ch/de.html [PT,L]
+
+# Turkey (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^tr-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/tr/tr.html [PT,L]
+
+# Turkey (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^tr.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/tr/tr.html [PT,L]
+
+# Turkey (QA)
+RewriteCond %{HTTP_HOST} ^tr-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/tr/tr.html [PT,L]
+
+# Turkey (staging)
+RewriteCond %{HTTP_HOST} ^tr-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/tr/tr.html [PT,L]
+
+# UAE (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^ae-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ae/en.html [PT,L]
+
+# UAE (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^ae.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ae/en.html [PT,L]
+
+# United Kingdom (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^uk-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb.html [PT,L]
+
+# United Kingdom (QA)
+RewriteCond %{HTTP_HOST} ^uk-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb.html [PT,L]
+
+# United Kingdom (staging)
+RewriteCond %{HTTP_HOST} ^uk-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb.html [PT,L]
+
+# United Kingdom (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^uk.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb.html [PT,L]
+
+# Venezuela (Prod Internal URL)
+RewriteCond %{HTTP_HOST} ^ve-aemprod.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ve/es.html [PT,L]
+
+# Venezuela (Prod Public URL)
+RewriteCond %{HTTP_HOST} ^ve.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ve/es.html [PT,L]
+
+# Venezuela (QA)
+RewriteCond %{HTTP_HOST} ^ve-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ve/es.html [PT,L]
+
+# Venezuela (staging)
+RewriteCond %{HTTP_HOST} ^ve-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/ve/es.html [PT,L]
+
+# Home Depot (Prod)
+RewriteCond %{HTTP_HOST} ^homedepot.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en.html [PT,L]
+
+# Lowe's (Prod)
+RewriteCond %{HTTP_HOST} ^lowes.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en.html [PT,L]
+
+# Home Depot (Prod internal)
+RewriteCond %{HTTP_HOST} ^prod-homedepot.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en.html [PT,L]
+
+# Home Depot (Staging)
+RewriteCond %{HTTP_HOST} ^homedepot-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en.html [PT,L]
+
+# Home Depot (QA)
+RewriteCond %{HTTP_HOST} ^homedepot-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en.html [PT,L]
+
+# Lowe's (Prod internal)
+RewriteCond %{HTTP_HOST} ^prod-lowes.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en.html [PT,L]
+
+# Lowe's (Staging)
+RewriteCond %{HTTP_HOST} ^lowes-aemstaging.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en.html [PT,L]
+
+# Lowe's (QA)
+RewriteCond %{HTTP_HOST} ^lowes-aemqa.trex.com
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en.html [PT,L]
+
+# US (All Environments)
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/us/en.html [PT,L]
+
+#############################################################################
+# End Home Page Rewrites
+#############################################################################
+
+#############################################################################
+# Non-Home Page Rewrites No Trailing Slash - So all domains rewrite to the site path
+# removed ".html" from the last RewriteCond as we're no longer using it, and we have already stripped .html from the end of the URL at this point
+# this will handle other file types (besides .html) that need URL shortening (like .pngs that are being stored on the page)
+# for now just assume this only needs to work for a single language per country, uncomment later if/when that changes
+#############################################################################
+
+# Australia (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^au-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1 [PT,L]
+
+# Australia (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^au.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1 [PT,L]
+
+# Australia (QA)
+RewriteCond %{HTTP_HOST} ^au-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1 [PT,L]
+
+# Australia (staging)
+RewriteCond %{HTTP_HOST} ^au-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1 [PT,L]
+
+# Austria (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^at-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/at/de/$1 [PT,L]
+
+# Austria (QA)
+RewriteCond %{HTTP_HOST} ^at-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/at/de/$1 [PT,L]
+
+# Austria (staging)
+RewriteCond %{HTTP_HOST} ^at-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/at/de/$1 [PT,L]
+
+# Austria (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^at.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/at/de/$1 [PT,L]
+
+# Bahrain (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^bh.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/bh/en/$1 [PT,L]
+
+# Brazil (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^br-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1 [PT,L]
+
+# Brazil (QA)
+RewriteCond %{HTTP_HOST} ^br-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1 [PT,L]
+
+# Brazil (staging)
+RewriteCond %{HTTP_HOST} ^br-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1 [PT,L]
+
+# Brazil (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^br.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1 [PT,L]
+
+# Canada (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ca-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1 [PT,L]
+
+# Canada (QA)
+RewriteCond %{HTTP_HOST} ^ca-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1 [PT,L]
+
+# Canada (staging)
+RewriteCond %{HTTP_HOST} ^ca-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1 [PT,L]
+
+# Canada (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ca.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1 [PT,L]
+
+# Chile (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^cl-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1 [PT,L]
+
+# Chile (QA)
+RewriteCond %{HTTP_HOST} ^cl-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1 [PT,L]
+
+# Chile (staging)
+RewriteCond %{HTTP_HOST} ^cl-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1 [PT,L]
+
+# Chile (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cl.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1 [PT,L]
+
+# Colombia (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^co-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/co/es/$1 [PT,L]
+
+# Colombia (QA)
+RewriteCond %{HTTP_HOST} ^co-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/co/es/$1 [PT,L]
+
+# Colombia (staging)
+RewriteCond %{HTTP_HOST} ^co-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/co/es/$1 [PT,L]
+
+# Colombia (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^co.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/co/es/$1 [PT,L]
+
+# Costa Rica (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^cr-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1 [PT,L]
+
+# Costa Rica (QA)
+RewriteCond %{HTTP_HOST} ^cr-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1 [PT,L]
+
+# Costa Rica (staging)
+RewriteCond %{HTTP_HOST} ^cr-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1 [PT,L]
+
+# Costa Rica (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cr.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1 [PT,L]
+
+# Cyprus (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cy.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cy/en/$1 [PT,L]
+
+# Czech Republic (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^cz-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1 [PT,L]
+
+# Czech Republic (QA)
+RewriteCond %{HTTP_HOST} ^cz-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1 [PT,L]
+
+# Czech Republic (staging)
+RewriteCond %{HTTP_HOST} ^cz-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1 [PT,L]
+
+# Czech Republic (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cz.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1 [PT,L]
+
+# Fiji (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^fj.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/fj/en/$1 [PT,L]
+
+# France (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^fr-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1 [PT,L]
+
+# France (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^fr.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1 [PT,L]
+
+# France (QA)
+RewriteCond %{HTTP_HOST} ^fr-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1 [PT,L]
+
+# France (staging)
+RewriteCond %{HTTP_HOST} ^fr-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1 [PT,L]
+
+# Germany (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^de-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/de/de/$1 [PT,L]
+
+# Germany (QA)
+RewriteCond %{HTTP_HOST} ^de-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/de/de/$1 [PT,L]
+
+# Germany (staging)
+RewriteCond %{HTTP_HOST} ^de-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/de/de/$1 [PT,L]
+
+# Germany (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^de.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/de/de/$1 [PT,L]
+
+# India (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^in.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/in/en/$1 [PT,L]
+
+# Ireland (QA)
+RewriteCond %{HTTP_HOST} ^ie-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie/$1 [PT,L]
+
+# Ireland (staging)
+RewriteCond %{HTTP_HOST} ^ie-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie/$1 [PT,L]
+
+# Ireland (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ie.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie/$1 [PT,L]
+
+# Kuwait (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^kw.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/kw/en/$1 [PT,L]
+
+# Mexico (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^mx-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1 [PT,L]
+
+# Mexico (QA)
+RewriteCond %{HTTP_HOST} ^mx-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1 [PT,L]
+
+# Mexico (staging)
+RewriteCond %{HTTP_HOST} ^mx-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1 [PT,L]
+
+# Mexico (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^mx.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1 [PT,L]
+
+# Netherlands (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^nl-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1 [PT,L]
+
+# Netherlands (QA)
+RewriteCond %{HTTP_HOST} ^nl-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1 [PT,L]
+
+# Netherlands (staging)
+RewriteCond %{HTTP_HOST} ^nl-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1 [PT,L]
+
+# Netherlands (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^nl.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1 [PT,L]
+
+# Norway (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^no-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/no/no/$1 [PT,L]
+
+# Norway (QA)
+RewriteCond %{HTTP_HOST} ^no-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/no/no/$1 [PT,L]
+
+# Norway (staging)
+RewriteCond %{HTTP_HOST} ^no-aemstagomg.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/no/no/$1 [PT,L]
+
+# Norway (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^no.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/no/no/$1 [PT,L]
+
+# Oman (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^om.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/om/en/$1 [PT,L]
+
+# Qatar (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^qa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/qa/en/$1 [PT,L]
+
+# Saudi Arabia (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^sa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/sa/en/$1 [PT,L]
+
+# South Africa (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^za.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/za/en/$1 [PT,L]
+
+# Spain (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^es-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/es/es/$1 [PT,L]
+
+# Spain (QA)
+RewriteCond %{HTTP_HOST} ^es-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/es/es/$1 [PT,L]
+
+# Spain (staging)
+RewriteCond %{HTTP_HOST} ^es-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/es/es/$1 [PT,L]
+
+# Spain (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^es.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/es/es/$1 [PT,L]
+
+# Sweden (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^se-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1 [PT,L]
+
+# Sweden (QA)
+RewriteCond %{HTTP_HOST} ^se-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1 [PT,L]
+
+# Sweden (staging)
+RewriteCond %{HTTP_HOST} ^se-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1 [PT,L]
+
+# Sweden (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^se.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1 [PT,L]
+
+# Switzerland (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ch-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1 [PT,L]
+
+# Switzerland (QA)
+RewriteCond %{HTTP_HOST} ^ch-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1 [PT,L]
+
+# Switzerland (QA)
+RewriteCond %{HTTP_HOST} ^ch-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1 [PT,L]
+
+# Switzerland (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ch.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1 [PT,L]
+
+# Turkey (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^tr-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1 [PT,L]
+
+# Turkey (QA)
+RewriteCond %{HTTP_HOST} ^tr-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1 [PT,L]
+
+# Turkey (staging)
+RewriteCond %{HTTP_HOST} ^tr-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1 [PT,L]
+
+# Turkey (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^tr.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1 [PT,L]
+
+# UAE (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ae-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ae/en/$1 [PT,L]
+
+# UAE (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ae.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ae/en/$1 [PT,L]
+
+# United Kingdom (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^uk-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1 [PT,L]
+
+# United Kingdom (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^uk.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1 [PT,L]
+
+# United Kingdom (QA)
+RewriteCond %{HTTP_HOST} ^uk-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1 [PT,L]
+
+# United Kingdom (staging)
+RewriteCond %{HTTP_HOST} ^uk-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1 [PT,L]
+
+# Venezuela (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ve-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1 [PT,L]
+
+# Venezuela (QA)
+RewriteCond %{HTTP_HOST} ^ve-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1 [PT,L]
+
+# Venezuela (staging)
+RewriteCond %{HTTP_HOST} ^ve-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1 [PT,L]
+
+# Venezuela (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ve.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1 [PT,L]
+
+# Home Depot (Prod)
+RewriteCond %{HTTP_HOST} ^homedepot.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1 [PT,L]
+
+# Home Depot (Prod internal)
+RewriteCond %{HTTP_HOST} ^prod-homedepot.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1 [PT,L]
+
+# Home Depot (Staging)
+RewriteCond %{HTTP_HOST} ^homedepot-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1 [PT,L]
+
+# Home Depot (QA)
+RewriteCond %{HTTP_HOST} ^homedepot-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1 [PT,L]
+
+# Lowe's (Prod)
+RewriteCond %{HTTP_HOST} ^lowes.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1 [PT,L]
+
+# Lowe's (Prod internal)
+RewriteCond %{HTTP_HOST} ^prod-lowes.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1 [PT,L]
+
+# Lowe's (Staging)
+RewriteCond %{HTTP_HOST} ^lowes-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1 [PT,L]
+
+# Lowe's (QA)
+RewriteCond %{HTTP_HOST} ^lowes-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1 [PT,L]
+
+
+# US
+#RewriteCond %{HTTP_HOST} ^!.*trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/us/en/$1 [PT,L]
+
+#############################################################################
+# End Non-Home Page Rewrites No Trailing Slash - So all domains rewrite to the site path
+#############################################################################
+
+#############################################################################
+# Non-Home Page Rewrites Trailing Slash - So all domains rewrite to the site path
+# handle URL shortening for URLs that don't end in .html (and they won't, because the rewrite rules above will strip the .html)
+# So assume that if a URL ends in a trailing slash, then it should be considered .html
+#############################################################################
+
+# Australia (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^au-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1.html [PT,L]
+
+# Australia (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^au.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1.html [PT,L]
+
+# Australia (QA - Public URL)
+RewriteCond %{HTTP_HOST} ^au-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1.html [PT,L]
+
+# Australia (staging)
+RewriteCond %{HTTP_HOST} ^au-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/au/en-au/$1.html [PT,L]
+
+# Austria (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^at-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/at/de/$1.html [PT,L]
+
+# Austria (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^at.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/at/de/$1.html [PT,L]
+
+# Austria (QA)
+RewriteCond %{HTTP_HOST} ^at-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/at/de/$1.html [PT,L]
+
+# Austria (QA)
+RewriteCond %{HTTP_HOST} ^at-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/at/de/$1.html [PT,L]
+
+# Bahrain (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^bh.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/bh/en/$1.html [PT,L]
+
+# Brazil (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^br-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1.html [PT,L]
+
+# Brazil (QA)
+RewriteCond %{HTTP_HOST} ^br-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1.html [PT,L]
+
+# Brazil (staging)
+RewriteCond %{HTTP_HOST} ^br-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1.html [PT,L]
+
+# Brazil (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^br.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/br/pt/$1.html [PT,L]
+
+# Canada (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ca-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1.html [PT,L]
+
+# Canada (QA)
+RewriteCond %{HTTP_HOST} ^ca-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1.html [PT,L]
+
+# Canada (staging)
+RewriteCond %{HTTP_HOST} ^ca-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1.html [PT,L]
+
+# Canada (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ca.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ca/fr-ca/$1.html [PT,L]
+
+# Chile (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^cl-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1.html [PT,L]
+
+# Chile (QA)
+RewriteCond %{HTTP_HOST} ^cl-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1.html [PT,L]
+
+# Chile (staging)
+RewriteCond %{HTTP_HOST} ^cl-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1.html [PT,L]
+
+# Chile (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cl.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cl/es/$1.html [PT,L]
+
+# Colombia (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^co-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/co/es/$1.html [PT,L]
+
+# Colombia (QA)
+RewriteCond %{HTTP_HOST} ^co-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/co/es/$1.html [PT,L]
+
+# Colombia (staging)
+RewriteCond %{HTTP_HOST} ^co-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/co/es/$1.html [PT,L]
+
+# Colombia (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^co.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/co/es/$1.html [PT,L]
+
+# Costa Rica (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^cr-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1.html [PT,L]
+
+# Costa Rica (QA)
+RewriteCond %{HTTP_HOST} ^cr-aemqatrex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1.html [PT,L]
+
+# Costa Rica (staging)
+RewriteCond %{HTTP_HOST} ^cr-aemstaging.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1.html [PT,L]
+
+# Costa Rica (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cr.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cr/es/$1.html [PT,L]
+
+# Cyprus (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cy.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cy/en/$1.html [PT,L]
+
+# Czech Republic (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^cz-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1.html [PT,L]
+
+# Czech Republic (QA)
+RewriteCond %{HTTP_HOST} ^cz-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1.html [PT,L]
+
+# Czech Republic (staging)
+RewriteCond %{HTTP_HOST} ^cz-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1.html [PT,L]
+
+# Czech Republic (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^cz.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/cz/cs/$1.html [PT,L]
+
+# Fiji (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^fj.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/fj/en/$1.html [PT,L]
+
+# France (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^fr-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1.html [PT,L]
+
+# France (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^fr.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1.html [PT,L]
+
+# France (QA)
+RewriteCond %{HTTP_HOST} ^fr-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1.html [PT,L]
+
+# France (QA)
+RewriteCond %{HTTP_HOST} ^fr-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/fr/fr/$1.html [PT,L]
+
+# Germany (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^de-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/de/de/$1.html [PT,L]
+
+# Germany (QA)
+RewriteCond %{HTTP_HOST} ^de-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/de/de/$1.html [PT,L]
+
+# Germany (staging)
+RewriteCond %{HTTP_HOST} ^de-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/de/de/$1.html [PT,L]
+
+# Germany (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^de.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/de/de/$1.html [PT,L]
+
+# India (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^in.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/in/en/$1.html [PT,L]
+
+# Ireland (QA)
+RewriteCond %{HTTP_HOST} ^ie-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie/$1.html [PT,L]
+
+# Ireland (staging)
+RewriteCond %{HTTP_HOST} ^ie-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie/$1.html [PT,L]
+
+# Ireland (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ie.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ie/en-ie/$1.html [PT,L]
+
+# Kuwait (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^kw.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/kw/en/$1.html [PT,L]
+
+# Mexico (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^mx-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1.html [PT,L]
+
+# Mexico (QA)
+RewriteCond %{HTTP_HOST} ^mx-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1.html [PT,L]
+
+# Mexico (staging)
+RewriteCond %{HTTP_HOST} ^mx-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1.html [PT,L]
+
+# Mexico (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^mx.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/mx/es/$1.html [PT,L]
+
+# Netherlands (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^nl-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1.html [PT,L]
+
+# Netherlands (QA)
+RewriteCond %{HTTP_HOST} ^nl-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1.html [PT,L]
+
+# Netherlands (staging)
+RewriteCond %{HTTP_HOST} ^nl-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1.html [PT,L]
+
+# Netherlands (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^nl.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/nl/nl/$1.html [PT,L]
+
+# Norway (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^no-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/no/no/$1.html [PT,L]
+
+# Norway (QA)
+RewriteCond %{HTTP_HOST} ^no-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/no/no/$1.html [PT,L]
+
+# Norway (staging)
+RewriteCond %{HTTP_HOST} ^no-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/no/no/$1.html [PT,L]
+
+# Norway (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^no.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/no/no/$1.html [PT,L]
+
+# Oman (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^om.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/om/en/$1.html [PT,L]
+
+# Qatar (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^qa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/qa/en/$1.html [PT,L]
+
+# Saudi Arabia (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^sa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/sa/en/$1.html [PT,L]
+
+# South Africa (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^za.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/za/en/$1.html [PT,L]
+
+# Spain (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^es-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/es/es/$1.html [PT,L]
+
+# Spain (QA)
+RewriteCond %{HTTP_HOST} ^es-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/es/es/$1.html [PT,L]
+
+# Spain (staging)
+RewriteCond %{HTTP_HOST} ^es-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/es/es/$1.html [PT,L]
+
+# Spain (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^es.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/es/es/$1.html [PT,L]
+
+# Sweden (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^se-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1.html [PT,L]
+
+# Sweden (QA)
+RewriteCond %{HTTP_HOST} ^se-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1.html [PT,L]
+
+# Sweden (staging)
+RewriteCond %{HTTP_HOST} ^se-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1.html [PT,L]
+
+# Sweden (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^se.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/se/sv/$1.html [PT,L]
+
+# Switzerland (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ch-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1.html [PT,L]
+
+# Switzerland (QA)
+RewriteCond %{HTTP_HOST} ^ch-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1.html [PT,L]
+
+# Switzerland (staging)
+RewriteCond %{HTTP_HOST} ^ch-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1.html [PT,L]
+
+
+# Switzerland (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ch.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ch/de/$1.html [PT,L]
+
+# Turkey (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^tr-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1.html [PT,L]
+
+# Turkey (QA)
+RewriteCond %{HTTP_HOST} ^tr-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1.html [PT,L]
+
+# Turkey (staging)
+RewriteCond %{HTTP_HOST} ^tr-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1.html [PT,L]
+
+# Turkey (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^tr.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/tr/tr/$1.html [PT,L]
+
+# UAE (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ae-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ae/en/$1.html [PT,L]
+
+# UAE (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ae.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ae/en/$1.html [PT,L]
+
+# United Kingdom (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^uk-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1.html [PT,L]
+
+# United Kingdom (QA)
+RewriteCond %{HTTP_HOST} ^uk-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1.html [PT,L]
+
+# United Kingdom (staging)
+RewriteCond %{HTTP_HOST} ^uk-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1.html [PT,L]
+
+# United Kingdom (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^uk.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/uk/en-gb/$1.html [PT,L]
+
+# Venezuela (Prod - Internal URL)
+RewriteCond %{HTTP_HOST} ^ve-aemprod.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1.html [PT,L]
+
+# Venezuela (QA)
+RewriteCond %{HTTP_HOST} ^ve-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1.html [PT,L]
+
+# Venezuela (staging)
+RewriteCond %{HTTP_HOST} ^ve-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1.html [PT,L]
+
+# Venezuela (Prod - Public URL)
+RewriteCond %{HTTP_HOST} ^ve.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/ve/es/$1.html [PT,L]
+
+# Home Depot (Prod)
+RewriteCond %{HTTP_HOST} ^homedepot.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1.html [PT,L]
+
+# Home Depot (Prod internal)
+RewriteCond %{HTTP_HOST} ^prod-homedepot.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1.html [PT,L]
+
+# Home Depot (Staging)
+RewriteCond %{HTTP_HOST} ^homedepot-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1.html [PT,L]
+
+# Home Depot (QA)
+RewriteCond %{HTTP_HOST} ^homedepot-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/home-depot/us/en/$1.html [PT,L]
+
+# Lowe's (Prod)
+RewriteCond %{HTTP_HOST} ^lowes.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1.html [PT,L]
+
+# Lowe's (Prod internal)
+RewriteCond %{HTTP_HOST} ^prod-lowes.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1.html [PT,L]
+
+# Lowe's (Staging)
+RewriteCond %{HTTP_HOST} ^lowes-aemstaging.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1.html [PT,L]
+
+# Lowe's (QA)
+RewriteCond %{HTTP_HOST} ^lowes-aemqa.trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/retail-sites/lowes/us/en/$1.html [PT,L]
+
+# US only
+#RewriteCond %{HTTP_HOST} ^.*trex.com
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/us/en/$1.html [PT,L]
+
+#############################################################################
+# End Non-Home Page Rewrites Trailing Slash - So all domains rewrite to the site path
+#############################################################################
+
+# handle URL shortening for URLs that don't end in .html (and they won't, because the rewrite rules above will strip the .html)
+# So assume that if a URL ends in a trailing slash, then it should be considered .html
+# non-US
+#RewriteCond %{HTTP_HOST} ^!.*trex.com
+#RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/$1.html [PT,L]
+
+# also handle the case where a URL WITH /content ends in a "/", we also need to add the .html back in there
+# but without attempting to shorten the URL
+RewriteCond %{REQUEST_URI} ^/content
+RewriteRule ^(.*)/$ $1.html [PT,L]

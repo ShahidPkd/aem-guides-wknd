@@ -1,0 +1,50 @@
+#
+# This file contains the cache rules, and can be customized.
+#
+# By default, it includes the default rules.
+#
+
+$include "./default_rules.any"
+
+/0003 {
+	/glob "/services/trex/customer.json"
+	/type "deny"
+}
+
+/0004 {
+	/glob "/services/trex/logout.json"
+	/type "deny"
+}
+
+/0005 {
+	/glob "/content/trex/*/shop/compareproducts.html"
+	/type "deny"
+}
+
+/0006 {
+	/glob "/content/trex/*.sitemap.xml"
+	/type "deny"
+}
+
+/0007 {
+	/glob "/content/dam/*/robots.txt"
+	/type "deny"
+}
+
+/0008 {
+	/glob "/content/trex/*.sitemapindex.xml"
+	/type "deny"
+}
+
+# Do not cache checkout
+/0070 {
+    /glob "/content/trex/*/shop/checkout*"
+    /type "deny"
+}
+
+
+# Do not cache checkout
+/0071 {
+    /glob "/shop/checkout/"
+    /type "deny"
+}
