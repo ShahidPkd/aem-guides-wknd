@@ -1,22 +1,65 @@
 #
-# This file contains the rewrite rules, and can be customized.
-#
 # By default, it includes just the rewrite rules. You can
 # add rewrite rules to this file but you should still include
 # the default rewrite rules.
+#
+# *** DISPATCHER SETUP NOTE ***
+# To use these rewrites, you must also run the following command in your Dispatcher folder. 
+# This will add the rewrites to a location where Dispatcher can read them.
+#
+# validator.exe full -d out path\to\your\source\code\dispatcher\src
+# 
 
 Include conf.d/rewrites/default_rewrite.rules
 
-# make sure the root site redirects are cache on CDN to avoid origin round-trip
-Header always set Cache-Control "max-age=300,stale-while-revalidate=43200,stale-if-error=43200" env=cdncache
 
-# redirect traffic from www to http home page
-RewriteCond %{HTTP_HOST} www.wknd.site [NC]
-RewriteRule ^(.*)$ https://wknd.site%{REQUEST_URI} [R=301,L,E=cdncache]
 
-# redirect all root traffic to US home page
-RewriteCond %{REQUEST_URI} ^/?$
-RewriteRule ^(/)$ /us/en.html [R=301,L,E=cdncache]
+
+# Special handling for the static error page in the event of a 503 (service unavailable) exception
+# this is needed in order to bypass the cloud error page that Adobe puts up by default
+RewriteRule ^/503-static-error-page /static/error.html [L,R=302]
+
+
+
+
+# Special handling of generic error pages to send a 302 instead of a 301, so the browser doesn't cache the redirect
+RewriteRule ^/5xx-error-page /errors/ [L,R=302]
+
+
+
+
+# robots and sitemap
+RewriteRule ^/robots.txt$ /content/dam/${CONTENT_FOLDER_NAME}/robots.txt [NC,PT]
+RewriteRule ^/sitemap.xml$ /content/${CONTENT_FOLDER_NAME}/us/en.sitemapindex.xml [NC,PT]
+
+
+
+
+# add www. to the beginning of any URLs that don't have a subdomain (i.e. https://itsshahid.com)
+RewriteCond %{HTTP_HOST} ^[^.]+\.[^.]+$
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}$1 [L,R=301]
+
+
+
+
+
+# if a URL has any upper-cased characters, redirect to the lower-cased version
+# https://trex.atlassian.net/browse/WEC-217
+# don't apply to the DAM
+RewriteMap  lc int:tolower
+RewriteCond %{REQUEST_URI} [A-Z]
+RewriteCond %{REQUEST_URI} !^/content/dam
+RewriteRule (.*) ${lc:$1} [R=301,L]
+
+
+
+
+# if any URL starts with /content/trex/language-masters, redirect to the US version of the page to ensure that users
+# can never actually get to a language-masters URL
+RewriteCond %{REQUEST_URI} ^/content/${CONTENT_FOLDER_NAME}/language-masters/en/?(.*)(.html|/)
+RewriteRule ^(.*)$ %1/ [L,R=301]
+
+
 
 # rewrite rule to remove .html from the end of our URLs, and add final slash
 # excluding /content/dam shouldn't really be necessary, but just in case they decide to store .html files
@@ -25,6 +68,12 @@ RewriteCond %{REQUEST_URI} !^/content/dam
 RewriteCond %{REQUEST_URI} !^/static
 RewriteRule ^(.*)\.html$ $1/ [L,R=301]
 
+
+
+
+
+# if URL doesn't end in .html but also doesn't end in a slash, and isn't an image, then add the slash there too
+# but be careful not to add the slash for anything other than full pages
 RewriteCond %{REQUEST_URI} !^/apps
 RewriteCond %{REQUEST_URI} !^/bin
 RewriteCond %{REQUEST_URI} !^/content
@@ -35,5 +84,96 @@ RewriteCond %{REQUEST_URI} !^/saml_login
 RewriteCond %{REQUEST_URI} !^/system
 RewriteCond %{REQUEST_URI} !^/tmp
 RewriteCond %{REQUEST_URI} !^/var
-RewriteCond %{REQUEST_URI} (.html|.jpe?g|.png|.svg)$
-RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/$1 [PT,L]
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} !(.jpe?g|.png|.svg)$
+RewriteRule ^(.*)([^/])$ $1$2/ [L,R=301]
+
+
+#############################################################################
+# Home Page Rewrites - So all domains rewrite to the correct root content node
+#############################################################################
+
+# Local URL (Internal URL)
+RewriteCond %{HTTP_HOST} ^localhost
+RewriteRule ^/?$ /content/${CONTENT_FOLDER_NAME}/us/en.html [PT,L]
+
+#############################################################################
+# End Home Page Rewrites
+#############################################################################
+
+
+
+
+#############################################################################
+# Non-Home Page Rewrites No Trailing Slash - So all domains rewrite to the site path
+# removed ".html" from the last RewriteCond as we're no longer using it, and we have already stripped .html from the end of the URL at this point
+# this will handle other file types (besides .html) that need URL shortening (like .pngs that are being stored on the page)
+# for now just assume this only needs to work for a single language per country, uncomment later if/when that changes
+#############################################################################
+
+# Localhost (Internal URL)
+RewriteCond %{HTTP_HOST} ^localhost
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/static
+RewriteCond %{REQUEST_URI} (.jpe?g|.png|.svg)$
+RewriteRule ^/(.*)$ /content/${CONTENT_FOLDER_NAME}/us/en/$1 [PT,L]
+
+#############################################################################
+# End Non-Home Page Rewrites No Trailing Slash - So all domains rewrite to the site path
+#############################################################################
+
+
+
+
+#############################################################################
+# Non-Home Page Rewrites Trailing Slash - So all domains rewrite to the site path
+# handle URL shortening for URLs that don't end in .html (and they won't, because the rewrite rules above will strip the .html)
+# So assume that if a URL ends in a trailing slash, then it should be considered .html
+#############################################################################
+
+# Localhost (Internal URL)
+RewriteCond %{HTTP_HOST} ^localhost
+RewriteCond %{REQUEST_URI} !^/apps
+RewriteCond %{REQUEST_URI} !^/bin
+RewriteCond %{REQUEST_URI} !^/content
+RewriteCond %{REQUEST_URI} !^/etc
+RewriteCond %{REQUEST_URI} !^/home
+RewriteCond %{REQUEST_URI} !^/libs
+RewriteCond %{REQUEST_URI} !^/saml_login
+RewriteCond %{REQUEST_URI} !^/system
+RewriteCond %{REQUEST_URI} !^/tmp
+RewriteCond %{REQUEST_URI} !^/var
+RewriteCond %{REQUEST_URI} !^/services
+RewriteCond %{REQUEST_URI} !^/dispatcher
+RewriteCond %{REQUEST_URI} !^/static
+RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/us/en/$1.html [PT,L]
+
+#############################################################################
+# End Non-Home Page Rewrites Trailing Slash - So all domains rewrite to the site path
+#############################################################################
+
+
+# handle URL shortening for URLs that don't end in .html (and they won't, because the rewrite rules above will strip the .html)
+# So assume that if a URL ends in a trailing slash, then it should be considered .html
+# non-US
+#RewriteCond %{HTTP_HOST} ^!.*localhost
+#RewriteRule ^/(.*)/$ /content/${CONTENT_FOLDER_NAME}/$1.html [PT,L]
+
+# also handle the case where a URL WITH /content ends in a "/", we also need to add the .html back in there
+# but without attempting to shorten the URL
+RewriteCond %{REQUEST_URI} ^/content
+RewriteRule ^(.*)/$ $1.html [PT,L]
